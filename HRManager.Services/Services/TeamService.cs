@@ -1,5 +1,7 @@
-﻿using HRManager.Data.Repositories.Interfaces;
+﻿using AutoMapper;
+using HRManager.Data.Repositories.Interfaces;
 using HRManager.Models.Entities;
+using HRManager.Services.DTOs.EmployeeDTO;
 using HRManager.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,21 +14,27 @@ namespace HRManager.Services.Services
     public class TeamService : ITeamService
     {
         private readonly ITeamRepository _teamRepository;
+        private readonly IMapper _mapper;
 
-        public TeamService(ITeamRepository teamRepository)
+
+        public TeamService(ITeamRepository teamRepository, IMapper mapper)
         {
             _teamRepository = teamRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Team>> GetTeamsAsync()
+        public async Task<IEnumerable<EmployeePositionTeamResponse>> GetTeamsAsync()
         {
-            return await _teamRepository.GetTeamsAsync();
+            var teams = await _teamRepository.GetTeamsAsync();
+            return _mapper.Map<IEnumerable<EmployeePositionTeamResponse>>(teams);
         }
 
-        public async Task<Team> GetTeamByIdAsync(int teamId)
+        public async Task<EmployeePositionTeamResponse> GetTeamByIdAsync(int teamId)
         {
-            return await _teamRepository.GetTeamByIdAsync(teamId);
+            var team = await _teamRepository.GetTeamByIdAsync(teamId);
+            return _mapper.Map<EmployeePositionTeamResponse>(team);
         }
+
 
         public async Task InsertTeamAsync(Team team)
         {

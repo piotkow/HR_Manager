@@ -1,5 +1,7 @@
-﻿using HRManager.Data.Repositories.Interfaces;
+﻿using AutoMapper;
+using HRManager.Data.Repositories.Interfaces;
 using HRManager.Models.Entities;
+using HRManager.Services.DTOs.ReportDTO;
 using HRManager.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,20 +14,24 @@ namespace HRManager.Services.Services
     public class ReportService : IReportService
     {
         private readonly IReportRepository _reportRepository;
+        private readonly IMapper _mapper;
 
-        public ReportService(IReportRepository reportRepository)
+        public ReportService(IReportRepository reportRepository, IMapper mapper)
         {
             _reportRepository = reportRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Report>> GetReportsAsync()
+        public async Task<IEnumerable<ReportEmployeeResponse>> GetReportsAsync()
         {
-            return await _reportRepository.GetReportsAsync();
+            var reports = await _reportRepository.GetReportsAsync();
+            return _mapper.Map<IEnumerable<ReportEmployeeResponse>>(reports);
         }
 
-        public async Task<Report> GetReportByIdAsync(int reportId)
+        public async Task<ReportEmployeeResponse> GetReportByIdAsync(int reportId)
         {
-            return await _reportRepository.GetReportByIdAsync(reportId);
+            var report = await _reportRepository.GetReportByIdAsync(reportId);
+            return _mapper.Map<ReportEmployeeResponse>(report);
         }
 
         public async Task InsertReportAsync(Report report)

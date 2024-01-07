@@ -1,5 +1,7 @@
-﻿using HRManager.Data.Repositories.Interfaces;
+﻿using AutoMapper;
+using HRManager.Data.Repositories.Interfaces;
 using HRManager.Models.Entities;
+using HRManager.Services.DTOs.DocumentDTO;
 using HRManager.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,21 +14,26 @@ namespace HRManager.Services.Services
     public class DocumentService : IDocumentService
     {
         private readonly IDocumentRepository _documentRepository;
+        private readonly IMapper _mapper;
 
-        public DocumentService(IDocumentRepository documentRepository)
+        public DocumentService(IDocumentRepository documentRepository, IMapper mapper)
         {
             _documentRepository = documentRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Document>> GetDocumentsAsync()
+        public async Task<IEnumerable<DocumentEmployeeResponse>> GetDocumentsAsync()
         {
-            return await _documentRepository.GetDocumentsAsync();
+            var documents = await _documentRepository.GetDocumentsAsync();
+            return _mapper.Map<IEnumerable<DocumentEmployeeResponse>>(documents);
         }
 
-        public async Task<Document> GetDocumentByIdAsync(int documentId)
+        public async Task<DocumentEmployeeResponse> GetDocumentByIdAsync(int documentId)
         {
-            return await _documentRepository.GetDocumentByIdAsync(documentId);
+            var document = await _documentRepository.GetDocumentByIdAsync(documentId);
+            return _mapper.Map<DocumentEmployeeResponse>(document);
         }
+
 
         public async Task InsertDocumentAsync(Document document)
         {

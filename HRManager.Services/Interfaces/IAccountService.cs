@@ -1,4 +1,5 @@
 ﻿using HRManager.Models.Entities;
+using HRManager.Services.DTOs.AccountDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,13 @@ namespace HRManager.Services.Interfaces
 {
     public interface IAccountService
     {
-        Task<IEnumerable<Account>> GetAccountsAsync();
-        Task<Account> GetAccountByIdAsync(int accountId);
+        Task<IEnumerable<AccountEmployeeResponse>> GetAccountsAsync();
+        Task<AccountEmployeeResponse> GetAccountByIdAsync(int accountId);
         Task InsertAccountAsync(Account account);
         Task DeleteAccountAsync(int accountId);
         Task UpdateAccountAsync(Account account);
     }
+
+
 
 }

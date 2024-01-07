@@ -1,5 +1,7 @@
-﻿using HRManager.Data.Repositories.Interfaces;
+﻿using AutoMapper;
+using HRManager.Data.Repositories.Interfaces;
 using HRManager.Models.Entities;
+using HRManager.Services.DTOs.AccountDTO;
 using HRManager.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,21 +14,26 @@ namespace HRManager.Services.Services
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IMapper _mapper;
 
-        public AccountService(IAccountRepository accountRepository)
+        public AccountService(IAccountRepository accountRepository, IMapper mapper)
         {
             _accountRepository = accountRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Account>> GetAccountsAsync()
+        public async Task<IEnumerable<AccountEmployeeResponse>> GetAccountsAsync()
         {
-            return await _accountRepository.GetAccountsAsync();
+            var accounts = await _accountRepository.GetAccountsAsync();
+            return _mapper.Map<IEnumerable<AccountEmployeeResponse>>(accounts);
         }
 
-        public async Task<Account> GetAccountByIdAsync(int accountId)
+        public async Task<AccountEmployeeResponse> GetAccountByIdAsync(int accountId)
         {
-            return await _accountRepository.GetAccountByIdAsync(accountId);
+            var account = await _accountRepository.GetAccountByIdAsync(accountId);
+            return _mapper.Map<AccountEmployeeResponse>(account);
         }
+
 
         public async Task InsertAccountAsync(Account account)
         {

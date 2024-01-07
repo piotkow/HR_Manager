@@ -1,5 +1,7 @@
-﻿using HRManager.Data.Repositories.Interfaces;
+﻿using AutoMapper;
+using HRManager.Data.Repositories.Interfaces;
 using HRManager.Models.Entities;
+using HRManager.Services.DTOs.EmployeeDTO;
 using HRManager.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,20 +14,24 @@ namespace HRManager.Services.Services
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IMapper _mapper;
 
-        public EmployeeService(IEmployeeRepository employeeRepository)
+        public EmployeeService(IEmployeeRepository employeeRepository, IMapper mapper)
         {
             _employeeRepository = employeeRepository;
+            _mapper= mapper;
         }
 
-        public async Task<IEnumerable<Employee>> GetEmployeesAsync()
+        public async Task<IEnumerable<EmployeePositionTeamResponse>> GetEmployeesAsync()
         {
-            return await _employeeRepository.GetEmployeesAsync();
+            var employees = await _employeeRepository.GetEmployeesAsync();
+            return _mapper.Map<IEnumerable<EmployeePositionTeamResponse>>(employees);
         }
 
-        public async Task<Employee> GetEmployeeByIdAsync(int employeeId)
+        public async Task<EmployeePositionTeamResponse> GetEmployeeByIdAsync(int employeeId)
         {
-            return await _employeeRepository.GetEmployeeByIdAsync(employeeId);
+            var employee = await _employeeRepository.GetEmployeeByIdAsync(employeeId);
+            return _mapper.Map<EmployeePositionTeamResponse>(employee);
         }
 
         public async Task InsertEmployeeAsync(Employee employee)

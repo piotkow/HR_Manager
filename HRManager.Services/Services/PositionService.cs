@@ -1,5 +1,7 @@
-﻿using HRManager.Data.Repositories.Interfaces;
+﻿using AutoMapper;
+using HRManager.Data.Repositories.Interfaces;
 using HRManager.Models.Entities;
+using HRManager.Services.DTOs.EmployeeDTO;
 using HRManager.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,21 +14,26 @@ namespace HRManager.Services.Services
     public class PositionService : IPositionService
     {
         private readonly IPositionRepository _positionRepository;
+        private readonly IMapper _mapper;
 
-        public PositionService(IPositionRepository positionRepository)
+        public PositionService(IPositionRepository positionRepository, IMapper mapper)
         {
             _positionRepository = positionRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Position>> GetPositionsAsync()
+        public async Task<IEnumerable<EmployeePositionTeamResponse>> GetPositionsAsync()
         {
-            return await _positionRepository.GetPositionsAsync();
+            var positions = await _positionRepository.GetPositionsAsync();
+            return _mapper.Map<IEnumerable<EmployeePositionTeamResponse>>(positions);
         }
 
-        public async Task<Position> GetPositionByIdAsync(int positionId)
+        public async Task<EmployeePositionTeamResponse> GetPositionByIdAsync(int positionId)
         {
-            return await _positionRepository.GetPositionByIdAsync(positionId);
+            var position = await _positionRepository.GetPositionByIdAsync(positionId);
+            return _mapper.Map<EmployeePositionTeamResponse>(position);
         }
+
 
         public async Task InsertPositionAsync(Position position)
         {

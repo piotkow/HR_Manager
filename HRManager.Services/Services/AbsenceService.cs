@@ -1,5 +1,7 @@
-﻿using HRManager.Data.Repositories.Interfaces;
+﻿using AutoMapper;
+using HRManager.Data.Repositories.Interfaces;
 using HRManager.Models.Entities;
+using HRManager.Services.DTOs.AbsenceDTO;
 using HRManager.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,20 +14,24 @@ namespace HRManager.Services.Services
     public class AbsenceService : IAbsenceService
     {
         private readonly IAbsenceRepository _absenceRepository;
+        private readonly IMapper _mapper;
 
-        public AbsenceService(IAbsenceRepository absenceRepository)
+        public AbsenceService(IAbsenceRepository absenceRepository, IMapper mapper)
         {
             _absenceRepository = absenceRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Absence>> GetAbsencesAsync()
+        public async Task<IEnumerable<AbsencesEmployeeResponse>> GetAbsencesAsync()
         {
-            return await _absenceRepository.GetAbsencesAsync();
+            var absences = await _absenceRepository.GetAbsencesAsync();
+            return _mapper.Map<IEnumerable<AbsencesEmployeeResponse>>(absences);
         }
 
-        public async Task<Absence> GetAbsenceByIdAsync(int absenceId)
+        public async Task<AbsencesEmployeeResponse> GetAbsenceByIdAsync(int absenceId)
         {
-            return await _absenceRepository.GetAbsenceByIdAsync(absenceId);
+            var absence = await _absenceRepository.GetAbsenceByIdAsync(absenceId);
+            return _mapper.Map<AbsencesEmployeeResponse>(absence);
         }
 
         public async Task InsertAbsenceAsync(Absence absence)

@@ -1,4 +1,5 @@
 ﻿using HRManager.Models.Entities;
+using HRManager.Services.DTOs.ReportDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,13 @@ namespace HRManager.Services.Interfaces
 {
     public interface IReportService
     {
-        Task<IEnumerable<Report>> GetReportsAsync();
-        Task<Report> GetReportByIdAsync(int reportId);
+        Task<IEnumerable<ReportEmployeeResponse>> GetReportsAsync();
+        Task<ReportEmployeeResponse> GetReportByIdAsync(int reportId);
         Task InsertReportAsync(Report report);
         Task DeleteReportAsync(int reportId);
         Task UpdateReportAsync(Report report);
     }
+
+
 
 }

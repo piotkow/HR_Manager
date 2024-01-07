@@ -18,8 +18,8 @@ namespace HRManager.Models.Entities
         [Required]
         public DateTime IssueDate { get; set; }
 
-        [Required, MaxLength(500)]
-        public required string Content { get; set; }
+        [Required]
+        public required byte[] Content { get; set; }
 
         public virtual Employee Employee { get; set; }
     }

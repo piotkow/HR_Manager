@@ -1,4 +1,5 @@
 ﻿using HRManager.Models.Entities;
+using HRManager.Services.DTOs.EmployeeDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,13 @@ namespace HRManager.Services.Interfaces
 {
     public interface IPositionService
     {
-        Task<IEnumerable<Position>> GetPositionsAsync();
-        Task<Position> GetPositionByIdAsync(int positionId);
+        Task<IEnumerable<EmployeePositionTeamResponse>> GetPositionsAsync();
+        Task<EmployeePositionTeamResponse> GetPositionByIdAsync(int positionId);
         Task InsertPositionAsync(Position position);
         Task DeletePositionAsync(int positionId);
         Task UpdatePositionAsync(Position position);
     }
+
+
 
 }

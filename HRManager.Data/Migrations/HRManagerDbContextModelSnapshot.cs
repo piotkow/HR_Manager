@@ -58,8 +58,8 @@ namespace HRManager.Data.Migrations
                         {
                             AbsenceID = 1,
                             EmployeeID = 1,
-                            EndDate = new DateTime(2024, 1, 3, 17, 12, 34, 699, DateTimeKind.Local).AddTicks(7236),
-                            StartDate = new DateTime(2024, 1, 1, 17, 12, 34, 699, DateTimeKind.Local).AddTicks(7231),
+                            EndDate = new DateTime(2024, 1, 4, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5654),
+                            StartDate = new DateTime(2024, 1, 2, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5649),
                             Status = 0
                         });
                 });
@@ -128,10 +128,9 @@ namespace HRManager.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentID"));
 
-                    b.Property<string>("Content")
+                    b.Property<byte[]>("Content")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("DocumentType")
                         .IsRequired()
@@ -154,10 +153,10 @@ namespace HRManager.Data.Migrations
                         new
                         {
                             DocumentID = 1,
-                            Content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                            Content = new byte[] { 76, 111, 114, 101, 109, 32, 105, 112, 115, 117, 109, 32, 100, 111, 108, 111, 114, 32, 115, 105, 116, 32, 97, 109, 101, 116, 44, 32, 99, 111, 110, 115, 101, 99, 116, 101, 116, 117, 114, 32, 97, 100, 105, 112, 105, 115, 99, 105, 110, 103, 32, 101, 108, 105, 116, 46 },
                             DocumentType = "Resume",
                             EmployeeID = 1,
-                            IssueDate = new DateTime(2022, 1, 6, 17, 12, 34, 699, DateTimeKind.Local).AddTicks(7300)
+                            IssueDate = new DateTime(2022, 1, 7, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5713)
                         });
                 });
 
@@ -214,7 +213,7 @@ namespace HRManager.Data.Migrations
                         {
                             EmployeeID = 1,
                             Address = "123 Main St",
-                            DateOfEmployment = new DateTime(2022, 1, 6, 17, 12, 34, 699, DateTimeKind.Local).AddTicks(6924),
+                            DateOfEmployment = new DateTime(2022, 1, 7, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5306),
                             Email = "john.doe@example.com",
                             FirstName = "John",
                             LastName = "Doe",
@@ -226,7 +225,7 @@ namespace HRManager.Data.Migrations
                         {
                             EmployeeID = 2,
                             Address = "456 Side St",
-                            DateOfEmployment = new DateTime(2023, 1, 6, 17, 12, 34, 699, DateTimeKind.Local).AddTicks(6976),
+                            DateOfEmployment = new DateTime(2023, 1, 7, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5361),
                             Email = "alice.smith@example.com",
                             FirstName = "Alice",
                             LastName = "Smith",
@@ -238,7 +237,7 @@ namespace HRManager.Data.Migrations
                         {
                             EmployeeID = 3,
                             Address = "789 Circle Ave",
-                            DateOfEmployment = new DateTime(2024, 1, 6, 17, 12, 34, 699, DateTimeKind.Local).AddTicks(6981),
+                            DateOfEmployment = new DateTime(2024, 1, 7, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5365),
                             Email = "bob.johnson@example.com",
                             FirstName = "Bob",
                             LastName = "Johnson",
@@ -309,10 +308,9 @@ namespace HRManager.Data.Migrations
                     b.Property<int>("EmployeeID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Result")
-                        .IsRequired()
+                    b.Property<bool>("Result")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("bit");
 
                     b.Property<int>("Severity")
                         .HasMaxLength(50)
@@ -338,7 +336,7 @@ namespace HRManager.Data.Migrations
                             AuthorID = 1,
                             Content = "Found a critical bug in the application.",
                             EmployeeID = 1,
-                            Result = "Fixed in the latest release",
+                            Result = true,
                             Severity = 3,
                             Title = "Bug Report"
                         });

@@ -5,13 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HRManager.Services.DTO
+namespace HRManager.Services.DTOs.AbsenceDTO
 {
-    public class EmployeePositionAbsencesResponse
+    public class AbsencesEmployeeResponse
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string TeamName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public Status Status { get; set; }

@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HRManager.Services.DTO
+namespace HRManager.Services.DTOs.ReportDTO
 {
-    public class EmployeeReportResponse
+    public class ReportEmployeeResponse
     {
         public string Title { get; set; }
-        public string Content { get; set; }
+        public byte[] Content { get; set; }
         public Severity Severity { get; set; }
-        public string Result { get; set; }
+        public bool Result { get; set; }
         public string AuthorFirstName { get; set; }
         public string AuthorLastName { get; set; }
         public string EmployeeFirstName { get; set; }

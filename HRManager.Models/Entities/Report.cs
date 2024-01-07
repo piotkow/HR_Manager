@@ -20,7 +20,7 @@ namespace HRManager.Models.Entities
         public required Severity Severity { get; set; }
 
         [MaxLength(200)]
-        public required string Result { get; set; }
+        public required bool Result { get; set; }
 
         [Required, ForeignKey("Author")]
         public required int AuthorID { get; set; }

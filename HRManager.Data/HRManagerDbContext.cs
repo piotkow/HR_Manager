@@ -1,6 +1,7 @@
 ﻿using HRManager.Models.Entities;
 using HRManager.Models.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace HRManager.Data
 {
@@ -24,6 +25,7 @@ namespace HRManager.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Account>().HasKey(a => new { a.AccountID, a.EmployeeID });
+            modelBuilder.Entity<Document>().Property(p => p.Content).HasColumnType("varbinary(max)");
 
             // Employee ONE - ONE Account
             modelBuilder.Entity<Employee>()
@@ -193,7 +195,7 @@ namespace HRManager.Data
                     EmployeeID = 1,
                     DocumentType = "Resume",
                     IssueDate = DateTime.Now.AddYears(-2),
-                    Content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    Content = Encoding.UTF8.GetBytes("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
                 }
                 // Add more documents as needed
             );
@@ -206,7 +208,7 @@ namespace HRManager.Data
                     Title = "Bug Report",
                     Content = "Found a critical bug in the application.",
                     Severity = Severity.Major,
-                    Result = "Fixed in the latest release",
+                    Result = true,
                     AuthorID = 1,
                     EmployeeID = 1
                 }
