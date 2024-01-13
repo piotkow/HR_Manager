@@ -3,11 +3,7 @@ using HRManager.Data.Repositories.Interfaces;
 using HRManager.Models.Entities;
 using HRManager.Services.DTOs.AbsenceDTO;
 using HRManager.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace HRManager.Services.Services
 {

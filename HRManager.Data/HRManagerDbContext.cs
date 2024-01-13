@@ -8,6 +8,7 @@ namespace HRManager.Data
     public class HRManagerDbContext : DbContext
     {
         public HRManagerDbContext() : base() { }
+        public HRManagerDbContext(DbContextOptions options) : base(options) {}
 
         public DbSet<Absence> Absences { get; set; }
         public DbSet<Account> Accounts { get; set; }

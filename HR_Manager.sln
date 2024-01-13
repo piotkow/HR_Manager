@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HRManager.Models", "HRManag
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HRManager.Data", "HRManager.Data\HRManager.Data.csproj", "{29BD00E0-20C1-4D77-B9C7-3D334E27952C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRManager.Services", "HRManager.Services\HRManager.Services.csproj", "{45A40B6E-4FDF-4D73-8031-2FB4E932FAE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HRManager.Services", "HRManager.Services\HRManager.Services.csproj", "{45A40B6E-4FDF-4D73-8031-2FB4E932FAE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRManager.Api", "HRManager.Api\HRManager.Api.csproj", "{32A6ED25-7418-4F5A-86B3-7AEEB4FFA983}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{45A40B6E-4FDF-4D73-8031-2FB4E932FAE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45A40B6E-4FDF-4D73-8031-2FB4E932FAE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45A40B6E-4FDF-4D73-8031-2FB4E932FAE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32A6ED25-7418-4F5A-86B3-7AEEB4FFA983}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32A6ED25-7418-4F5A-86B3-7AEEB4FFA983}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32A6ED25-7418-4F5A-86B3-7AEEB4FFA983}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32A6ED25-7418-4F5A-86B3-7AEEB4FFA983}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

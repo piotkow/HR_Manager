@@ -5,6 +5,7 @@ using HRManager.Services.DTOs.AccountDTO;
 using HRManager.Services.DTOs.DocumentDTO;
 using HRManager.Services.DTOs.EmployeeDTO;
 using HRManager.Services.DTOs.ReportDTO;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Text;
 
 public class MappingProfile : Profile
@@ -12,7 +13,13 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<Absence, AbsencesEmployeeResponse>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+            .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Employee.FirstName))
+            .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Employee.LastName))
+            .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+            .ForMember(dest => dest.RejectionReason, opt => opt.MapFrom(src => src.RejectionReason));
+
 
         CreateMap<Account, AccountEmployeeResponse>()
             .ForMember(dest => dest.AccountType, opt => opt.MapFrom(src => src.AccountType.ToString()));
