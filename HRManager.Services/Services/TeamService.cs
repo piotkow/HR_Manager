@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HRManager.Data.Repositories.Interfaces;
+using HRManager.Data.UnitOfWork;
 using HRManager.Models.Entities;
 using HRManager.Services.DTOs.EmployeeDTO;
 using HRManager.Services.Interfaces;
@@ -13,42 +14,41 @@ namespace HRManager.Services.Services
 {
     public class TeamService : ITeamService
     {
-        private readonly ITeamRepository _teamRepository;
-        private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-
-        public TeamService(ITeamRepository teamRepository, IMapper mapper)
+        public TeamService(IUnitOfWork unitOfWork)
         {
-            _teamRepository = teamRepository;
-            _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<EmployeePositionTeamResponse>> GetTeamsAsync()
+        public async Task<IEnumerable<Team>> GetTeamsAsync()
         {
-            var teams = await _teamRepository.GetTeamsAsync();
-            return _mapper.Map<IEnumerable<EmployeePositionTeamResponse>>(teams);
+            var teams = await _unitOfWork.TeamRepository.GetTeamsAsync();
+            return teams;
         }
 
-        public async Task<EmployeePositionTeamResponse> GetTeamByIdAsync(int teamId)
+        public async Task<Team> GetTeamByIdAsync(int teamId)
         {
-            var team = await _teamRepository.GetTeamByIdAsync(teamId);
-            return _mapper.Map<EmployeePositionTeamResponse>(team);
+            var team = await _unitOfWork.TeamRepository.GetTeamByIdAsync(teamId);
+            return team;
         }
-
 
         public async Task InsertTeamAsync(Team team)
         {
-            await _teamRepository.InsertTeamAsync(team);
+            await _unitOfWork.TeamRepository.InsertTeamAsync(team);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task DeleteTeamAsync(int teamId)
         {
-            await _teamRepository.DeleteTeamAsync(teamId);
+            await _unitOfWork.TeamRepository.DeleteTeamAsync(teamId);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task UpdateTeamAsync(Team team)
         {
-            await _teamRepository.UpdateTeamAsync(team);
+            await _unitOfWork.TeamRepository.UpdateTeamAsync(team);
+            await _unitOfWork.SaveAsync();
         }
     }
 

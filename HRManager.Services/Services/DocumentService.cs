@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HRManager.Data.Repositories.Interfaces;
+using HRManager.Data.UnitOfWork;
 using HRManager.Models.Entities;
 using HRManager.Services.DTOs.DocumentDTO;
 using HRManager.Services.Interfaces;
@@ -13,41 +14,43 @@ namespace HRManager.Services.Services
 {
     public class DocumentService : IDocumentService
     {
-        private readonly IDocumentRepository _documentRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public DocumentService(IDocumentRepository documentRepository, IMapper mapper)
+        public DocumentService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _documentRepository = documentRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<DocumentEmployeeResponse>> GetDocumentsAsync()
         {
-            var documents = await _documentRepository.GetDocumentsAsync();
+            var documents = await _unitOfWork.DocumentRepository.GetDocumentsAsync();
             return _mapper.Map<IEnumerable<DocumentEmployeeResponse>>(documents);
         }
 
         public async Task<DocumentEmployeeResponse> GetDocumentByIdAsync(int documentId)
         {
-            var document = await _documentRepository.GetDocumentByIdAsync(documentId);
+            var document = await _unitOfWork.DocumentRepository.GetDocumentByIdAsync(documentId);
             return _mapper.Map<DocumentEmployeeResponse>(document);
         }
 
-
         public async Task InsertDocumentAsync(Document document)
         {
-            await _documentRepository.InsertDocumentAsync(document);
+            await _unitOfWork.DocumentRepository.InsertDocumentAsync(document);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task DeleteDocumentAsync(int documentId)
         {
-            await _documentRepository.DeleteDocumentAsync(documentId);
+            await _unitOfWork.DocumentRepository.DeleteDocumentAsync(documentId);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task UpdateDocumentAsync(Document document)
         {
-            await _documentRepository.UpdateDocumentAsync(document);
+            await _unitOfWork.DocumentRepository.UpdateDocumentAsync(document);
+            await _unitOfWork.SaveAsync();
         }
     }
 

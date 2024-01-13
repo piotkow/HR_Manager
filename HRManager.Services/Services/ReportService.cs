@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HRManager.Data.Repositories.Interfaces;
+using HRManager.Data.UnitOfWork;
 using HRManager.Models.Entities;
 using HRManager.Services.DTOs.ReportDTO;
 using HRManager.Services.Interfaces;
@@ -13,41 +14,45 @@ namespace HRManager.Services.Services
 {
     public class ReportService : IReportService
     {
-        private readonly IReportRepository _reportRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ReportService(IReportRepository reportRepository, IMapper mapper)
+        public ReportService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _reportRepository = reportRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<ReportEmployeeResponse>> GetReportsAsync()
         {
-            var reports = await _reportRepository.GetReportsAsync();
+            var reports = await _unitOfWork.ReportRepository.GetReportsAsync();
             return _mapper.Map<IEnumerable<ReportEmployeeResponse>>(reports);
         }
 
         public async Task<ReportEmployeeResponse> GetReportByIdAsync(int reportId)
         {
-            var report = await _reportRepository.GetReportByIdAsync(reportId);
+            var report = await _unitOfWork.ReportRepository.GetReportByIdAsync(reportId);
             return _mapper.Map<ReportEmployeeResponse>(report);
         }
 
         public async Task InsertReportAsync(Report report)
         {
-            await _reportRepository.InsertReportAsync(report);
+            await _unitOfWork.ReportRepository.InsertReportAsync(report);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task DeleteReportAsync(int reportId)
         {
-            await _reportRepository.DeleteReportAsync(reportId);
+            await _unitOfWork.ReportRepository.DeleteReportAsync(reportId);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task UpdateReportAsync(Report report)
         {
-            await _reportRepository.UpdateReportAsync(report);
+            await _unitOfWork.ReportRepository.UpdateReportAsync(report);
+            await _unitOfWork.SaveAsync();
         }
     }
+
 
 }

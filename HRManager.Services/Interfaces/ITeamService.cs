@@ -10,8 +10,8 @@ namespace HRManager.Services.Interfaces
 {
     public interface ITeamService
     {
-        Task<IEnumerable<EmployeePositionTeamResponse>> GetTeamsAsync();
-        Task<EmployeePositionTeamResponse> GetTeamByIdAsync(int teamId);
+        Task<IEnumerable<Team>> GetTeamsAsync();
+        Task<Team> GetTeamByIdAsync(int teamId);
         Task InsertTeamAsync(Team team);
         Task DeleteTeamAsync(int teamId);
         Task UpdateTeamAsync(Team team);

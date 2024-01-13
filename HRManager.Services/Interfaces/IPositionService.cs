@@ -10,8 +10,8 @@ namespace HRManager.Services.Interfaces
 {
     public interface IPositionService
     {
-        Task<IEnumerable<EmployeePositionTeamResponse>> GetPositionsAsync();
-        Task<EmployeePositionTeamResponse> GetPositionByIdAsync(int positionId);
+        Task<IEnumerable<Position>> GetPositionsAsync();
+        Task<Position> GetPositionByIdAsync(int positionId);
         Task InsertPositionAsync(Position position);
         Task DeletePositionAsync(int positionId);
         Task UpdatePositionAsync(Position position);

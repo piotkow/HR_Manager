@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HRManager.Data.Repositories.Interfaces;
+using HRManager.Data.UnitOfWork;
 using HRManager.Models.Entities;
 using HRManager.Services.DTOs.AccountDTO;
 using HRManager.Services.Interfaces;
@@ -13,41 +14,43 @@ namespace HRManager.Services.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly IAccountRepository _accountRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public AccountService(IAccountRepository accountRepository, IMapper mapper)
+        public AccountService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _accountRepository = accountRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<AccountEmployeeResponse>> GetAccountsAsync()
         {
-            var accounts = await _accountRepository.GetAccountsAsync();
+            var accounts = await _unitOfWork.AccountRepository.GetAccountsAsync();
             return _mapper.Map<IEnumerable<AccountEmployeeResponse>>(accounts);
         }
 
         public async Task<AccountEmployeeResponse> GetAccountByIdAsync(int accountId)
         {
-            var account = await _accountRepository.GetAccountByIdAsync(accountId);
+            var account = await _unitOfWork.AccountRepository.GetAccountByIdAsync(accountId);
             return _mapper.Map<AccountEmployeeResponse>(account);
         }
 
-
         public async Task InsertAccountAsync(Account account)
         {
-            await _accountRepository.InsertAccountAsync(account);
+            await _unitOfWork.AccountRepository.InsertAccountAsync(account);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task DeleteAccountAsync(int accountId)
         {
-            await _accountRepository.DeleteAccountAsync(accountId);
+            await _unitOfWork.AccountRepository.DeleteAccountAsync(accountId);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task UpdateAccountAsync(Account account)
         {
-            await _accountRepository.UpdateAccountAsync(account);
+            await _unitOfWork.AccountRepository.UpdateAccountAsync(account);
+            await _unitOfWork.SaveAsync();
         }
     }
 

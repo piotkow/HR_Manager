@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HRManager.Data.Repositories.Interfaces;
+using HRManager.Data.UnitOfWork;
 using HRManager.Models.Entities;
 using HRManager.Services.DTOs.EmployeeDTO;
 using HRManager.Services.Interfaces;
@@ -13,41 +14,41 @@ namespace HRManager.Services.Services
 {
     public class PositionService : IPositionService
     {
-        private readonly IPositionRepository _positionRepository;
-        private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public PositionService(IPositionRepository positionRepository, IMapper mapper)
+        public PositionService(IUnitOfWork unitOfWork)
         {
-            _positionRepository = positionRepository;
-            _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<EmployeePositionTeamResponse>> GetPositionsAsync()
+        public async Task<IEnumerable<Position>> GetPositionsAsync()
         {
-            var positions = await _positionRepository.GetPositionsAsync();
-            return _mapper.Map<IEnumerable<EmployeePositionTeamResponse>>(positions);
+            var positions = await _unitOfWork.PositionRepository.GetPositionsAsync();
+            return positions;
         }
 
-        public async Task<EmployeePositionTeamResponse> GetPositionByIdAsync(int positionId)
+        public async Task<Position> GetPositionByIdAsync(int positionId)
         {
-            var position = await _positionRepository.GetPositionByIdAsync(positionId);
-            return _mapper.Map<EmployeePositionTeamResponse>(position);
+            var position = await _unitOfWork.PositionRepository.GetPositionByIdAsync(positionId);
+            return position;
         }
-
 
         public async Task InsertPositionAsync(Position position)
         {
-            await _positionRepository.InsertPositionAsync(position);
+            await _unitOfWork.PositionRepository.InsertPositionAsync(position);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task DeletePositionAsync(int positionId)
         {
-            await _positionRepository.DeletePositionAsync(positionId);
+            await _unitOfWork.PositionRepository.DeletePositionAsync(positionId);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task UpdatePositionAsync(Position position)
         {
-            await _positionRepository.UpdatePositionAsync(position);
+            await _unitOfWork.PositionRepository.UpdatePositionAsync(position);
+            await _unitOfWork.SaveAsync();
         }
     }
 
