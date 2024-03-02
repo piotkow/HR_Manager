@@ -35,10 +35,13 @@ namespace HRManager.Services.Services
             return _mapper.Map<ReportEmployeeResponse>(report);
         }
 
-        public async Task InsertReportAsync(Report report)
+        public async Task<Report> InsertReportAsync(ReportRequest reportReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var report = _mapper.Map<Report>(reportReq);
             await _unitOfWork.ReportRepository.InsertReportAsync(report);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
+            return report;
         }
 
         public async Task DeleteReportAsync(int reportId)
@@ -47,10 +50,13 @@ namespace HRManager.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task UpdateReportAsync(Report report)
+        public async Task UpdateReportAsync(int reportId, ReportRequest reportReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var report = await _unitOfWork.ReportRepository.GetReportByIdAsync(reportId);
+            _mapper.Map(reportReq, report);
             await _unitOfWork.ReportRepository.UpdateReportAsync(report);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
         }
     }
 

@@ -3,6 +3,7 @@ using HRManager.Data.Repositories.Interfaces;
 using HRManager.Data.UnitOfWork;
 using HRManager.Models.Entities;
 using HRManager.Services.DTOs.EmployeeDTO;
+using HRManager.Services.DTOs.TeamDTO;
 using HRManager.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,12 @@ namespace HRManager.Services.Services
     public class TeamService : ITeamService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public TeamService(IUnitOfWork unitOfWork)
+        public TeamService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<Team>> GetTeamsAsync()
@@ -33,10 +36,13 @@ namespace HRManager.Services.Services
             return team;
         }
 
-        public async Task InsertTeamAsync(Team team)
+        public async Task<Team> InsertTeamAsync(TeamRequest teamReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var team = _mapper.Map<Team>(teamReq);
             await _unitOfWork.TeamRepository.InsertTeamAsync(team);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
+            return team;
         }
 
         public async Task DeleteTeamAsync(int teamId)
@@ -45,10 +51,13 @@ namespace HRManager.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task UpdateTeamAsync(Team team)
+        public async Task UpdateTeamAsync(int teamId, TeamRequest teamReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var team = await _unitOfWork.TeamRepository.GetTeamByIdAsync(teamId);
+            _mapper.Map(teamReq, team);
             await _unitOfWork.TeamRepository.UpdateTeamAsync(team);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
         }
     }
 

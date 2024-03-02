@@ -35,10 +35,13 @@ namespace HRManager.Services.Services
             return _mapper.Map<AccountEmployeeResponse>(account);
         }
 
-        public async Task InsertAccountAsync(Account account)
+        public async Task<Account> InsertAccountAsync(AccountRequest accountReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var account = _mapper.Map<Account>(accountReq);
             await _unitOfWork.AccountRepository.InsertAccountAsync(account);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
+            return account;
         }
 
         public async Task DeleteAccountAsync(int accountId)
@@ -47,10 +50,16 @@ namespace HRManager.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task UpdateAccountAsync(Account account)
+        public async Task UpdateAccountAsync(int accountId, AccountRequest accountReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var account = await _unitOfWork.AccountRepository.GetAccountByIdAsync(accountId);
+            account.EmployeeID = accountReq.EmployeeID;
+            account.Username = accountReq.Username;
+            account.Password = accountReq.Password;
+            account.AccountType = accountReq.AccountType;
             await _unitOfWork.AccountRepository.UpdateAccountAsync(account);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
         }
     }
 

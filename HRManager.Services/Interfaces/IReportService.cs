@@ -12,9 +12,9 @@ namespace HRManager.Services.Interfaces
     {
         Task<IEnumerable<ReportEmployeeResponse>> GetReportsAsync();
         Task<ReportEmployeeResponse> GetReportByIdAsync(int reportId);
-        Task InsertReportAsync(Report report);
+        Task<Report> InsertReportAsync(ReportRequest reportReq);
         Task DeleteReportAsync(int reportId);
-        Task UpdateReportAsync(Report report);
+        Task UpdateReportAsync(int reportId, ReportRequest reportReq);
     }
 
 

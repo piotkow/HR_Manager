@@ -12,9 +12,9 @@ namespace HRManager.Services.Interfaces
     {
         Task<IEnumerable<AbsencesEmployeeResponse>> GetAbsencesAsync();
         Task<AbsencesEmployeeResponse> GetAbsenceByIdAsync(int absenceId);
-        Task InsertAbsenceAsync(Absence absence);
+        Task<Absence> InsertAbsenceAsync(AbsenceRequest absenceReq);
         Task DeleteAbsenceAsync(int absenceId);
-        Task UpdateAbsenceAsync(Absence absence);
+        Task UpdateAbsenceAsync(int absenceId, AbsenceRequest absenceReq);
     }
 
 

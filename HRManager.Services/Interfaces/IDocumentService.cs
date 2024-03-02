@@ -12,9 +12,9 @@ namespace HRManager.Services.Interfaces
     {
         Task<IEnumerable<DocumentEmployeeResponse>> GetDocumentsAsync();
         Task<DocumentEmployeeResponse> GetDocumentByIdAsync(int documentId);
-        Task InsertDocumentAsync(Document document);
+        Task<Document> InsertDocumentAsync(DocumentRequest documentReq);
         Task DeleteDocumentAsync(int documentId);
-        Task UpdateDocumentAsync(Document document);
+        Task UpdateDocumentAsync(int documentId, DocumentRequest documentReq);
     }
 
 

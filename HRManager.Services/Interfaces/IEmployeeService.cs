@@ -12,9 +12,9 @@ namespace HRManager.Services.Interfaces
     {
         Task<IEnumerable<EmployeePositionTeamResponse>> GetEmployeesAsync();
         Task<EmployeePositionTeamResponse> GetEmployeeByIdAsync(int employeeId);
-        Task InsertEmployeeAsync(Employee employee);
+        Task<Employee> InsertEmployeeAsync(EmployeeRequest employeeReq);
         Task DeleteEmployeeAsync(int employeeId);
-        Task UpdateEmployeeAsync(Employee employee);
+        Task UpdateEmployeeAsync(int employeeId, EmployeeRequest employeeReq);
     }
 
 }

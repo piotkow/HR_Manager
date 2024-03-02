@@ -39,10 +39,10 @@ namespace YourApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> InsertAbsence(Absence absence)
+        public async Task<IActionResult> InsertAbsence([FromBody] AbsenceRequest absenceReq)
         {
-            await _absenceService.InsertAbsenceAsync(absence);
-            return Ok();
+            var insertedAbsence = await _absenceService.InsertAbsenceAsync(absenceReq);
+            return CreatedAtAction("GetAbsenceById", new { id = insertedAbsence.AbsenceID }, insertedAbsence);
         }
 
         [HttpDelete("{id}")]
@@ -53,15 +53,11 @@ namespace YourApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAbsence(int id, Absence absence)
+        public async Task<IActionResult> UpdateAbsence(int id, [FromBody]AbsenceRequest absenceReq)
         {
-            if (id != absence.AbsenceID)
-            {
-                return BadRequest();
-            }
-
-            await _absenceService.UpdateAbsenceAsync(absence);
-            return Ok();
+            await _absenceService.UpdateAbsenceAsync(id, absenceReq);
+            return Ok(absenceReq);
         }
     }
+
 }

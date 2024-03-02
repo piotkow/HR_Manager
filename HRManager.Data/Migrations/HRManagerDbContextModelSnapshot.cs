@@ -58,8 +58,8 @@ namespace HRManager.Data.Migrations
                         {
                             AbsenceID = 1,
                             EmployeeID = 1,
-                            EndDate = new DateTime(2024, 1, 4, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5654),
-                            StartDate = new DateTime(2024, 1, 2, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5649),
+                            EndDate = new DateTime(2024, 2, 5, 18, 13, 44, 2, DateTimeKind.Local).AddTicks(1489),
+                            StartDate = new DateTime(2024, 2, 3, 18, 13, 44, 2, DateTimeKind.Local).AddTicks(1483),
                             Status = 0
                         });
                 });
@@ -156,7 +156,7 @@ namespace HRManager.Data.Migrations
                             Content = new byte[] { 76, 111, 114, 101, 109, 32, 105, 112, 115, 117, 109, 32, 100, 111, 108, 111, 114, 32, 115, 105, 116, 32, 97, 109, 101, 116, 44, 32, 99, 111, 110, 115, 101, 99, 116, 101, 116, 117, 114, 32, 97, 100, 105, 112, 105, 115, 99, 105, 110, 103, 32, 101, 108, 105, 116, 46 },
                             DocumentType = "Resume",
                             EmployeeID = 1,
-                            IssueDate = new DateTime(2022, 1, 7, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5713)
+                            IssueDate = new DateTime(2022, 2, 8, 18, 13, 44, 2, DateTimeKind.Local).AddTicks(1606)
                         });
                 });
 
@@ -168,10 +168,15 @@ namespace HRManager.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeID"));
 
-                    b.Property<string>("Address")
+                    b.Property<string>("City")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<DateTime>("DateOfEmployment")
                         .HasColumnType("datetime2");
@@ -197,6 +202,16 @@ namespace HRManager.Data.Migrations
                     b.Property<int>("PositionID")
                         .HasColumnType("int");
 
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
                     b.Property<int>("TeamID")
                         .HasColumnType("int");
 
@@ -212,37 +227,46 @@ namespace HRManager.Data.Migrations
                         new
                         {
                             EmployeeID = 1,
-                            Address = "123 Main St",
-                            DateOfEmployment = new DateTime(2022, 1, 7, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5306),
+                            City = "New York",
+                            Country = "USA",
+                            DateOfEmployment = new DateTime(2022, 2, 8, 18, 13, 44, 2, DateTimeKind.Local).AddTicks(1219),
                             Email = "john.doe@example.com",
                             FirstName = "John",
                             LastName = "Doe",
                             Phone = "123-456-7890",
                             PositionID = 1,
+                            PostalCode = "10001",
+                            Street = "123 Main St",
                             TeamID = 1
                         },
                         new
                         {
                             EmployeeID = 2,
-                            Address = "456 Side St",
-                            DateOfEmployment = new DateTime(2023, 1, 7, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5361),
+                            City = "Los Angeles",
+                            Country = "USA",
+                            DateOfEmployment = new DateTime(2023, 2, 8, 18, 13, 44, 2, DateTimeKind.Local).AddTicks(1274),
                             Email = "alice.smith@example.com",
                             FirstName = "Alice",
                             LastName = "Smith",
                             Phone = "987-654-3210",
                             PositionID = 2,
+                            PostalCode = "90001",
+                            Street = "456 Side St",
                             TeamID = 2
                         },
                         new
                         {
                             EmployeeID = 3,
-                            Address = "789 Circle Ave",
-                            DateOfEmployment = new DateTime(2024, 1, 7, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5365),
+                            City = "Chicago",
+                            Country = "USA",
+                            DateOfEmployment = new DateTime(2024, 2, 8, 18, 13, 44, 2, DateTimeKind.Local).AddTicks(1278),
                             Email = "bob.johnson@example.com",
                             FirstName = "Bob",
                             LastName = "Johnson",
                             Phone = "555-666-7777",
                             PositionID = 3,
+                            PostalCode = "60601",
+                            Street = "789 Circle Ave",
                             TeamID = 3
                         });
                 });

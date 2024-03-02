@@ -12,9 +12,9 @@ namespace HRManager.Services.Interfaces
     {
         Task<IEnumerable<AccountEmployeeResponse>> GetAccountsAsync();
         Task<AccountEmployeeResponse> GetAccountByIdAsync(int accountId);
-        Task InsertAccountAsync(Account account);
+        Task<Account> InsertAccountAsync(AccountRequest accountReq);
         Task DeleteAccountAsync(int accountId);
-        Task UpdateAccountAsync(Account account);
+        Task UpdateAccountAsync(int accountId, AccountRequest accountReq);
     }
 
 

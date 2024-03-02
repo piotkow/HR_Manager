@@ -16,12 +16,12 @@ namespace HRManager.Data.Repositories.Repositories
 
         public async Task<IEnumerable<Account>> GetAccountsAsync()
         {
-            return await context.Accounts.ToListAsync();
+            return await context.Accounts.Include(a=>a.Employee).ToListAsync();
         }
 
         public async Task<Account> GetAccountByIdAsync(int accountId)
         {
-            return await context.Accounts.FindAsync(accountId);
+            return await context.Accounts.Include(a=>a.Employee).FirstOrDefaultAsync(a=>a.AccountID==accountId);
         }
 
         public async Task InsertAccountAsync(Account account)

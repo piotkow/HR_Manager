@@ -35,10 +35,13 @@ namespace HRManager.Services.Services
             return _mapper.Map<EmployeePositionTeamResponse>(employee);
         }
 
-        public async Task InsertEmployeeAsync(Employee employee)
+        public async Task<Employee> InsertEmployeeAsync(EmployeeRequest employeeReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var employee = _mapper.Map<Employee>(employeeReq);
             await _unitOfWork.EmployeeRepository.InsertEmployeeAsync(employee);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
+            return employee;
         }
 
         public async Task DeleteEmployeeAsync(int employeeId)
@@ -47,10 +50,13 @@ namespace HRManager.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task UpdateEmployeeAsync(Employee employee)
+        public async Task UpdateEmployeeAsync(int employeeId, EmployeeRequest employeeReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var employee = await _unitOfWork.EmployeeRepository.GetEmployeeByIdAsync(employeeId);
+            _mapper.Map(employeeReq, employee);
             await _unitOfWork.EmployeeRepository.UpdateEmployeeAsync(employee);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
         }
     }
 

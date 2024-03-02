@@ -21,8 +21,14 @@ namespace HRManager.Models.Entities
         [Required, Phone]
         public required string Phone { get; set; }
 
-        [Required, MaxLength(100)]
-        public required string Address { get; set; }
+        [Required, MaxLength(30)]
+        public string Country { get; set; }
+        [Required, MaxLength(30)]
+        public string City { get; set; }
+        [Required, MaxLength(30)]
+        public string Street { get; set; }
+        [Required, MaxLength(30)]
+        public string PostalCode { get; set; }
 
         [Required]
         public DateTime DateOfEmployment { get; set; }

@@ -28,9 +28,12 @@ builder.Services.AddSingleton(mapper);
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAbsenceService, AbsenceService>();
-builder.Services.AddScoped<IAbsenceRepository, AbsenceRepository>();
-
-
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IPositionService, PositionService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<ITeamService, TeamService>();
 
 
 // Add services to the container.

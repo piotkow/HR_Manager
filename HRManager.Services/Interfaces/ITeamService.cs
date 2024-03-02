@@ -1,5 +1,6 @@
 ﻿using HRManager.Models.Entities;
 using HRManager.Services.DTOs.EmployeeDTO;
+using HRManager.Services.DTOs.TeamDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,8 @@ namespace HRManager.Services.Interfaces
     {
         Task<IEnumerable<Team>> GetTeamsAsync();
         Task<Team> GetTeamByIdAsync(int teamId);
-        Task InsertTeamAsync(Team team);
+        Task<Team> InsertTeamAsync(TeamRequest teamReq);
         Task DeleteTeamAsync(int teamId);
-        Task UpdateTeamAsync(Team team);
+        Task UpdateTeamAsync(int teamId, TeamRequest teamReq);
     }
 }

@@ -31,10 +31,13 @@ namespace HRManager.Services.Services
             return _mapper.Map<AbsencesEmployeeResponse>(absence);
         }
 
-        public async Task InsertAbsenceAsync(Absence absence)
+        public async Task<Absence> InsertAbsenceAsync(AbsenceRequest absenceReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var absence = _mapper.Map<Absence>(absenceReq);
             await _unitOfWork.AbsenceRepository.InsertAbsenceAsync(absence);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
+            return absence;
         }
 
         public async Task DeleteAbsenceAsync(int absenceId)
@@ -43,10 +46,17 @@ namespace HRManager.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task UpdateAbsenceAsync(Absence absence)
+        public async Task UpdateAbsenceAsync(int absenceId, AbsenceRequest absenceReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var absence = await _unitOfWork.AbsenceRepository.GetAbsenceByIdAsync(absenceId);
+            absence.EmployeeID= absenceReq.EmployeeID;
+            absence.StartDate= absenceReq.StartDate;
+            absence.EndDate= absenceReq.EndDate;
+            absence.Status = absenceReq.Status;
+            absence.RejectionReason= absenceReq.RejectionReason;
             await _unitOfWork.AbsenceRepository.UpdateAbsenceAsync(absence);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
         }
     }
 

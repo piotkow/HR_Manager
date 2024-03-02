@@ -3,6 +3,7 @@ using HRManager.Data.Repositories.Interfaces;
 using HRManager.Data.UnitOfWork;
 using HRManager.Models.Entities;
 using HRManager.Services.DTOs.EmployeeDTO;
+using HRManager.Services.DTOs.PositionDTO;
 using HRManager.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,12 @@ namespace HRManager.Services.Services
     public class PositionService : IPositionService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public PositionService(IUnitOfWork unitOfWork)
+        public PositionService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<Position>> GetPositionsAsync()
@@ -33,10 +36,13 @@ namespace HRManager.Services.Services
             return position;
         }
 
-        public async Task InsertPositionAsync(Position position)
+        public async Task<Position> InsertPositionAsync(PositionRequest positionReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var position = _mapper.Map<Position>(positionReq);
             await _unitOfWork.PositionRepository.InsertPositionAsync(position);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
+            return position;
         }
 
         public async Task DeletePositionAsync(int positionId)
@@ -45,10 +51,13 @@ namespace HRManager.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task UpdatePositionAsync(Position position)
+        public async Task UpdatePositionAsync(int positionId, PositionRequest positionReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var position = await _unitOfWork.PositionRepository.GetPositionByIdAsync(positionId);
+            _mapper.Map(positionReq, position);
             await _unitOfWork.PositionRepository.UpdatePositionAsync(position);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
         }
     }
 

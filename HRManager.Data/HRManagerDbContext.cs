@@ -90,7 +90,10 @@ namespace HRManager.Data
                     LastName = "Doe",
                     Email = "john.doe@example.com",
                     Phone = "123-456-7890",
-                    Address = "123 Main St",
+                    Country = "USA",
+                    City = "New York",
+                    Street = "123 Main St",
+                    PostalCode = "10001",
                     DateOfEmployment = DateTime.Now.AddYears(-2),
                     PositionID = 1,
                     TeamID = 1
@@ -102,7 +105,10 @@ namespace HRManager.Data
                     LastName = "Smith",
                     Email = "alice.smith@example.com",
                     Phone = "987-654-3210",
-                    Address = "456 Side St",
+                    Country = "USA",
+                    City = "Los Angeles",
+                    Street = "456 Side St",
+                    PostalCode = "90001",
                     DateOfEmployment = DateTime.Now.AddYears(-1),
                     PositionID = 2,
                     TeamID = 2
@@ -114,13 +120,16 @@ namespace HRManager.Data
                     LastName = "Johnson",
                     Email = "bob.johnson@example.com",
                     Phone = "555-666-7777",
-                    Address = "789 Circle Ave",
+                    Country = "USA",
+                    City = "Chicago",
+                    Street = "789 Circle Ave",
+                    PostalCode = "60601",
                     DateOfEmployment = DateTime.Now,
                     PositionID = 3,
                     TeamID = 3
                 }
-            // Add more employees as needed
             );
+
 
             // Seed Positions
             modelBuilder.Entity<Position>().HasData(

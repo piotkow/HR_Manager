@@ -15,12 +15,12 @@ namespace HRManager.Data.Repositories.Repositories
 
         public async Task<IEnumerable<Report>> GetReportsAsync()
         {
-            return await context.Reports.ToListAsync();
+            return await context.Reports.Include(e=>e.Employee).ToListAsync();
         }
 
         public async Task<Report> GetReportByIdAsync(int reportId)
         {
-            return await context.Reports.FindAsync(reportId);
+            return await context.Reports.Include(e=>e.Employee).FirstOrDefaultAsync(e=>e.ReportID==reportId);
         }
 
         public async Task InsertReportAsync(Report report)

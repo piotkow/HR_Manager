@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HRManager.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class employeeChange : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,7 +51,10 @@ namespace HRManager.Data.Migrations
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Country = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    City = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Street = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    PostalCode = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     DateOfEmployment = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PositionID = table.Column<int>(type: "int", nullable: false),
                     TeamID = table.Column<int>(type: "int", nullable: false)
@@ -191,18 +194,18 @@ namespace HRManager.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Employees",
-                columns: new[] { "EmployeeID", "Address", "DateOfEmployment", "Email", "FirstName", "LastName", "Phone", "PositionID", "TeamID" },
+                columns: new[] { "EmployeeID", "City", "Country", "DateOfEmployment", "Email", "FirstName", "LastName", "Phone", "PositionID", "PostalCode", "Street", "TeamID" },
                 values: new object[,]
                 {
-                    { 1, "123 Main St", new DateTime(2022, 1, 7, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5306), "john.doe@example.com", "John", "Doe", "123-456-7890", 1, 1 },
-                    { 2, "456 Side St", new DateTime(2023, 1, 7, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5361), "alice.smith@example.com", "Alice", "Smith", "987-654-3210", 2, 2 },
-                    { 3, "789 Circle Ave", new DateTime(2024, 1, 7, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5365), "bob.johnson@example.com", "Bob", "Johnson", "555-666-7777", 3, 3 }
+                    { 1, "New York", "USA", new DateTime(2022, 2, 8, 18, 13, 44, 2, DateTimeKind.Local).AddTicks(1219), "john.doe@example.com", "John", "Doe", "123-456-7890", 1, "10001", "123 Main St", 1 },
+                    { 2, "Los Angeles", "USA", new DateTime(2023, 2, 8, 18, 13, 44, 2, DateTimeKind.Local).AddTicks(1274), "alice.smith@example.com", "Alice", "Smith", "987-654-3210", 2, "90001", "456 Side St", 2 },
+                    { 3, "Chicago", "USA", new DateTime(2024, 2, 8, 18, 13, 44, 2, DateTimeKind.Local).AddTicks(1278), "bob.johnson@example.com", "Bob", "Johnson", "555-666-7777", 3, "60601", "789 Circle Ave", 3 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Absences",
                 columns: new[] { "AbsenceID", "EmployeeID", "EndDate", "RejectionReason", "StartDate", "Status" },
-                values: new object[] { 1, 1, new DateTime(2024, 1, 4, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5654), null, new DateTime(2024, 1, 2, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5649), 0 });
+                values: new object[] { 1, 1, new DateTime(2024, 2, 5, 18, 13, 44, 2, DateTimeKind.Local).AddTicks(1489), null, new DateTime(2024, 2, 3, 18, 13, 44, 2, DateTimeKind.Local).AddTicks(1483), 0 });
 
             migrationBuilder.InsertData(
                 table: "Accounts",
@@ -217,7 +220,7 @@ namespace HRManager.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Documents",
                 columns: new[] { "DocumentID", "Content", "DocumentType", "EmployeeID", "IssueDate" },
-                values: new object[] { 1, new byte[] { 76, 111, 114, 101, 109, 32, 105, 112, 115, 117, 109, 32, 100, 111, 108, 111, 114, 32, 115, 105, 116, 32, 97, 109, 101, 116, 44, 32, 99, 111, 110, 115, 101, 99, 116, 101, 116, 117, 114, 32, 97, 100, 105, 112, 105, 115, 99, 105, 110, 103, 32, 101, 108, 105, 116, 46 }, "Resume", 1, new DateTime(2022, 1, 7, 15, 28, 49, 311, DateTimeKind.Local).AddTicks(5713) });
+                values: new object[] { 1, new byte[] { 76, 111, 114, 101, 109, 32, 105, 112, 115, 117, 109, 32, 100, 111, 108, 111, 114, 32, 115, 105, 116, 32, 97, 109, 101, 116, 44, 32, 99, 111, 110, 115, 101, 99, 116, 101, 116, 117, 114, 32, 97, 100, 105, 112, 105, 115, 99, 105, 110, 103, 32, 101, 108, 105, 116, 46 }, "Resume", 1, new DateTime(2022, 2, 8, 18, 13, 44, 2, DateTimeKind.Local).AddTicks(1606) });
 
             migrationBuilder.InsertData(
                 table: "Reports",

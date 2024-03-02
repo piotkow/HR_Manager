@@ -35,10 +35,13 @@ namespace HRManager.Services.Services
             return _mapper.Map<DocumentEmployeeResponse>(document);
         }
 
-        public async Task InsertDocumentAsync(Document document)
+        public async Task<Document> InsertDocumentAsync(DocumentRequest documentReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var document = _mapper.Map<Document>(documentReq);
             await _unitOfWork.DocumentRepository.InsertDocumentAsync(document);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
+            return document;
         }
 
         public async Task DeleteDocumentAsync(int documentId)
@@ -47,10 +50,16 @@ namespace HRManager.Services.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task UpdateDocumentAsync(Document document)
+        public async Task UpdateDocumentAsync(int documentId, DocumentRequest documentReq)
         {
+            await _unitOfWork.BeginTransactionAsync();
+            var document = await _unitOfWork.DocumentRepository.GetDocumentByIdAsync(documentId);
+            document.EmployeeID = documentReq.EmployeeID;
+            document.DocumentType = documentReq.DocumentType;
+            document.IssueDate = documentReq.IssueDate;
+            document.Content = documentReq.Content;
             await _unitOfWork.DocumentRepository.UpdateDocumentAsync(document);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.CommitAsync();
         }
     }
 
