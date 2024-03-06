@@ -1,4 +1,5 @@
 ﻿using HRManager.Models.Entities;
+using HRManager.Models.Enums;
 using HRManager.Services.DTOs.AbsenceDTO;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace HRManager.Services.Interfaces
         Task<Absence> InsertAbsenceAsync(AbsenceRequest absenceReq);
         Task DeleteAbsenceAsync(int absenceId);
         Task UpdateAbsenceAsync(int absenceId, AbsenceRequest absenceReq);
+        Task<IEnumerable<AbsencesEmployeeResponse>> GetAbsencesByStatusAsync(Status status);
     }
 
 

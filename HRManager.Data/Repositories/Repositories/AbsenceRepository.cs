@@ -1,5 +1,6 @@
 ﻿using HRManager.Data.Repositories.Interfaces;
 using HRManager.Models.Entities;
+using HRManager.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -27,6 +28,11 @@ namespace HRManager.Data.Repositories.Repositories
         public async Task InsertAbsenceAsync(Absence absence)
         {
             await context.Absences.AddAsync(absence);
+        }
+
+        public async Task<IEnumerable<Absence>> GetAbsencesByStatus(Status status)
+        {
+            return await context.Absences.Include(e=>e.Employee).Where(a=>a.Status==status).ToListAsync();
         }
 
         public async Task DeleteAbsenceAsync(int absenceId)

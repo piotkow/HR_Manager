@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using HRManager.Models.Entities;
+using HRManager.Models.Enums;
 using HRManager.Services.DTOs.AbsenceDTO;
 using HRManager.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -57,6 +58,13 @@ namespace YourApi.Controllers
         {
             await _absenceService.UpdateAbsenceAsync(id, absenceReq);
             return Ok(absenceReq);
+        }
+
+        [HttpGet("byStatus")]
+        public async Task<IEnumerable<AbsencesEmployeeResponse>> GetAbsencesByStatus(Status status)
+        {
+            var absences = await _absenceService.GetAbsencesByStatusAsync(status);
+            return absences;
         }
     }
 

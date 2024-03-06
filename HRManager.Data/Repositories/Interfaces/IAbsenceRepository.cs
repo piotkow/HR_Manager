@@ -1,4 +1,5 @@
 ﻿using HRManager.Models.Entities;
+using HRManager.Models.Enums;
 
 namespace HRManager.Data.Repositories.Interfaces
 {
@@ -9,6 +10,7 @@ namespace HRManager.Data.Repositories.Interfaces
         Task InsertAbsenceAsync(Absence absence);
         Task DeleteAbsenceAsync(int absenceId);
         Task UpdateAbsenceAsync(Absence absence);
+        Task<IEnumerable<Absence>> GetAbsencesByStatus(Status status);
         Task SaveAsync();
     }
 

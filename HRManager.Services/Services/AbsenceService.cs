@@ -2,6 +2,7 @@
 using HRManager.Data.Repositories.Interfaces;
 using HRManager.Data.UnitOfWork;
 using HRManager.Models.Entities;
+using HRManager.Models.Enums;
 using HRManager.Services.DTOs.AbsenceDTO;
 using HRManager.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -57,6 +58,12 @@ namespace HRManager.Services.Services
             absence.RejectionReason= absenceReq.RejectionReason;
             await _unitOfWork.AbsenceRepository.UpdateAbsenceAsync(absence);
             await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<IEnumerable<AbsencesEmployeeResponse>> GetAbsencesByStatusAsync(Status status)
+        {
+            var absences = await _unitOfWork.AbsenceRepository.GetAbsencesByStatus(status);
+            return _mapper.Map<IEnumerable<AbsencesEmployeeResponse>>(absences);
         }
     }
 
