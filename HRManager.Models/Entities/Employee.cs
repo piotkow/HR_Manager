@@ -44,6 +44,7 @@ namespace HRManager.Models.Entities
         public virtual Team Team { get; set; }
 
         public virtual Account Account { get; set; }
+        public virtual Photo Photo { get; set; }
         public virtual ICollection<Document> Documents { get; set; }
         public virtual ICollection<Absence> Absences { get; set; }
         [InverseProperty("Author")]

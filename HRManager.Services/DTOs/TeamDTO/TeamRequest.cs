@@ -4,5 +4,6 @@
     {
         public required string TeamName { get; set; }
         public required string TeamDescription { get; set; }
+        public string Department {  get; set; }
     }
 }

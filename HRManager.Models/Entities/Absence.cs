@@ -15,6 +15,8 @@ namespace HRManager.Models.Entities
         [Required, ForeignKey("Employees")]
         public int EmployeeID { get; set; }
 
+        public string Description {  get; set; }
+
         [Required]
         public DateTime StartDate { get; set; }
 

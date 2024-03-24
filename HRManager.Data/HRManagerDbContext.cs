@@ -17,6 +17,7 @@ namespace HRManager.Data
         public DbSet<Position> Positions { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<Team> Teams { get; set; }
+        public DbSet<Photo> Photos { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -81,6 +82,14 @@ namespace HRManager.Data
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Employee ONE - ONE Photo
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.Photo)
+                .WithOne(p => p.Employee)
+                .HasForeignKey<Photo>(e => e.EmployeeID)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Seed Employees
             modelBuilder.Entity<Employee>().HasData(
                 new Employee
@@ -130,6 +139,30 @@ namespace HRManager.Data
                 }
             );
 
+            // Seed Photos
+            modelBuilder.Entity<Photo>().HasData(
+                new Photo
+                {
+                    PhotoID = 1,
+                    EmployeeID = 1,
+                    Filename = "JohnDoe.jpg",
+                    Uri = "https://hrmanagerblob.blob.core.windows.net/avatars/JohnDoe.jpg"
+                },
+                new Photo
+                {
+                    PhotoID = 2,
+                    EmployeeID = 2,
+                    Filename = "AliceSmith.jpg",
+                    Uri = "https://hrmanagerblob.blob.core.windows.net/avatars/AliceSmith.jpg"
+                },
+                new Photo
+                {
+                    PhotoID = 3,
+                    EmployeeID = 3,
+                    Filename = "BobJohnson.jpg",
+                    Uri = "https://hrmanagerblob.blob.core.windows.net/avatars/BobJohnson.jpg"
+                }
+            );
 
             // Seed Positions
             modelBuilder.Entity<Position>().HasData(
@@ -160,6 +193,7 @@ namespace HRManager.Data
                 {
                     AbsenceID = 1,
                     EmployeeID = 1,
+                    Description = "I need to take a 8 days off to complete Lego Star Wars",
                     StartDate = DateTime.Now.AddDays(-5),
                     EndDate = DateTime.Now.AddDays(-3),
                     Status = Status.Approved,
@@ -228,23 +262,26 @@ namespace HRManager.Data
                 new Team
                 {
                     TeamID = 1,
-                    TeamName = "Development",
+                    TeamName = "Development Team",
+                    Department = "Development",
                     TeamDescription = "Responsible for software development"
                 },
                 new Team
                 {
                     TeamID = 2,
-                    TeamName = "Human Resources",
+                    TeamName = "Human Resources Team",
+                    Department = "Human Resources",
                     TeamDescription = "Manages HR activities and policies"
                 },
                 new Team
                 {
                     TeamID = 3,
-                    TeamName = "IT Support",
+                    TeamName = "IT Support Team",
+                    Department = "IT",
                     TeamDescription = "Provides IT support and infrastructure management"
                 }
-            // Add more teams as needed
             );
+
 
             base.OnModelCreating(modelBuilder);
         }

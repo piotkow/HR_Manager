@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HRManager.Models.Entities;
+using HRManager.Services.DTOs.PhotoDTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +10,7 @@ namespace HRManager.Services.DTOs.EmployeeDTO
 {
     public class EmployeePositionTeamResponse
     {
+        public int EmployeeID { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
@@ -21,5 +24,7 @@ namespace HRManager.Services.DTOs.EmployeeDTO
         public string PositionDescription { get; set; }
         public string TeamName { get; set; }
         public string TeamDescription { get; set; }
+        public string Department { get; set; }
+        public PhotoResponse Photo { get; set;}
     }
 }

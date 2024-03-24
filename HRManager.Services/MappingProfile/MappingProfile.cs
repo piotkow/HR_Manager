@@ -4,6 +4,7 @@ using HRManager.Services.DTOs.AbsenceDTO;
 using HRManager.Services.DTOs.AccountDTO;
 using HRManager.Services.DTOs.DocumentDTO;
 using HRManager.Services.DTOs.EmployeeDTO;
+using HRManager.Services.DTOs.PhotoDTO;
 using HRManager.Services.DTOs.PositionDTO;
 using HRManager.Services.DTOs.ReportDTO;
 using HRManager.Services.DTOs.TeamDTO;
@@ -17,6 +18,7 @@ public class MappingProfile : Profile
         CreateMap<Absence, AbsencesEmployeeResponse>()
             .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Employee.FirstName))
             .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Employee.LastName))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
@@ -40,11 +42,17 @@ public class MappingProfile : Profile
 
         CreateMap<Document, DocumentEmployeeResponse>();
 
+        CreateMap<Photo, PhotoResponse>()
+            .ForMember(dest => dest.PhotoID, opt => opt.MapFrom(src => src.PhotoID))
+            .ForMember(dest => dest.Uri, opt => opt.MapFrom(src => src.Uri));
+
         CreateMap<Employee, EmployeePositionTeamResponse>()
             .ForMember(dest => dest.PositionName, opt => opt.MapFrom(src => src.Position.PositionName))
             .ForMember(dest => dest.PositionDescription, opt => opt.MapFrom(src => src.Position.PositionDescription))
             .ForMember(dest => dest.TeamName, opt => opt.MapFrom(src => src.Team.TeamName))
-            .ForMember(dest => dest.TeamDescription, opt => opt.MapFrom(src => src.Team.TeamDescription));
+            .ForMember(dest => dest.TeamDescription, opt => opt.MapFrom(src => src.Team.TeamDescription))
+            .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Team.Department))
+            .ForMember(dest => dest.Photo, opt => opt.MapFrom(src => src.Photo));
 
         CreateMap<Report, ReportEmployeeResponse>()
             .ForMember(dest => dest.Content, opt => opt.MapFrom(src => ConvertToByteArray(src.Content)))
@@ -104,7 +112,8 @@ public class MappingProfile : Profile
         CreateMap<TeamRequest, Team>()
             .ForMember(dest => dest.TeamID, opt => opt.Ignore())
             .ForMember(dest => dest.TeamName, opt => opt.MapFrom(src => src.TeamName))
-            .ForMember(dest => dest.TeamDescription, opt => opt.MapFrom(src => src.TeamDescription));
+            .ForMember(dest => dest.TeamDescription, opt => opt.MapFrom(src => src.TeamDescription))
+            .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department));
 
     }
 
