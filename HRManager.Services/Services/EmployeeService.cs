@@ -2,6 +2,7 @@
 using HRManager.Data.Repositories.Interfaces;
 using HRManager.Data.UnitOfWork;
 using HRManager.Models.Entities;
+using HRManager.Services.DTOs.AccountDTO;
 using HRManager.Services.DTOs.EmployeeDTO;
 using HRManager.Services.Interfaces;
 using System;
@@ -58,6 +59,7 @@ namespace HRManager.Services.Services
             await _unitOfWork.EmployeeRepository.UpdateEmployeeAsync(employee);
             await _unitOfWork.CommitAsync();
         }
+
     }
 
 }

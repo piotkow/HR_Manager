@@ -1,6 +1,8 @@
 ﻿using HRManager.Models.Entities;
 using HRManager.Services.DTOs.EmployeeDTO;
+using HRManager.Services.DTOs.PhotoDTO;
 using HRManager.Services.Interfaces;
+using HRManager.Services.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +13,12 @@ namespace HRManager.Api.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
+        private readonly IPhotoService _photoService;
 
-        public EmployeeController(IEmployeeService employeeService)
+        public EmployeeController(IEmployeeService employeeService, IPhotoService photoService)
         {
             _employeeService = employeeService;
+            _photoService = photoService;
         }
 
         [HttpGet]
@@ -42,6 +46,71 @@ namespace HRManager.Api.Controllers
         {
             var insertedEmployee = await _employeeService.InsertEmployeeAsync(employeeReq);
             return CreatedAtAction("GetEmployeeById", new { id = insertedEmployee.EmployeeID }, insertedEmployee);
+        }
+
+        [HttpPost("upload-photo")]
+        public async Task<ActionResult<PhotoResponse>> UploadPhoto(int employeeId, IFormFile photo)
+        {
+
+            var user = await _employeeService.GetEmployeeByIdAsync(employeeId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+
+            if (photo == null)
+            {
+                return BadRequest("No file provided.");
+            }
+
+
+            var allowedFileTypes = new[] { "image/jpeg", "image/jpg", "image/png" };
+            if (!allowedFileTypes.Contains(photo.ContentType))
+            {
+                return BadRequest("Invalid file type. Only JPEG, JPG, and PNG are allowed.");
+            }
+
+
+            if (user.Photo != null)
+            {
+                await DeletePhoto();
+            }
+
+            var result = await _photoService.UploadPhotoAsync(photo);
+
+            var photoEntity = new PhotoResponse
+            {
+                Filename = photo.FileName,
+                Uri = result.Uri.ToString()
+            };
+
+            user.Photo = photoEntity;
+            if (await _employeeService) return _mapper.Map<PhotoDto>(photoEntity);
+            return BadRequest("Problem adding photo");
+        }
+
+        [HttpDelete("delete-photo")]
+        public async Task<IActionResult> DeletePhoto()
+        {
+
+            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (user.Photo != null)
+            {
+                await _photoService.DeletePhotoAsync(user.Photo.Id, user.Photo.Uri, user.Photo.Filename);
+            }
+
+
+            if (await _userRepository.SaveAllAsync()) return Ok("Deleted");
+            return BadRequest("Problem deleting photo");
         }
 
         [HttpDelete("{id}")]

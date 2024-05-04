@@ -1,4 +1,4 @@
-﻿using HRManager.Models.Entities;
+﻿phousing HRManager.Models.Entities;
 
 namespace HRManager.Data.Repositories.Interfaces
 {
@@ -9,6 +9,7 @@ namespace HRManager.Data.Repositories.Interfaces
         Task InsertAccountAsync(Account account);
         Task DeleteAccountAsync(int accountId);
         Task UpdateAccountAsync(Account account);
+        Task<Account> GetAccountByUsernameAsync(string username);
         Task SaveAsync();
     }
 

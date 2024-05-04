@@ -38,6 +38,8 @@ namespace HRManager.Services.Services
         public async Task<Account> InsertAccountAsync(AccountRequest accountReq)
         {
             await _unitOfWork.BeginTransactionAsync();
+            string hashPassword = PasswordHasher.PasswordHasher.HashPassword(accountReq.Password);
+            accountReq.Password = hashPassword;
             var account = _mapper.Map<Account>(accountReq);
             await _unitOfWork.AccountRepository.InsertAccountAsync(account);
             await _unitOfWork.CommitAsync();
@@ -60,6 +62,32 @@ namespace HRManager.Services.Services
             account.AccountType = accountReq.AccountType;
             await _unitOfWork.AccountRepository.UpdateAccountAsync(account);
             await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<AccountEmployeeResponse> AuthenticateUser(AccountLoginRequest user)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(user.Username) || string.IsNullOrEmpty(user.Password))
+                {
+                    return null;
+                }
+
+                var existingUser = await _unitOfWork.AccountRepository.GetAccountByUsernameAsync(user.Username);
+
+                bool correctPassword = PasswordHasher.PasswordHasher.VerifyPassword(user.Password, existingUser.Password);
+
+                if (existingUser != null && correctPassword)
+                {
+                    return _mapper.Map<AccountEmployeeResponse>(existingUser);
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 

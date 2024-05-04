@@ -15,6 +15,7 @@ namespace HRManager.Services.Interfaces
         Task<Account> InsertAccountAsync(AccountRequest accountReq);
         Task DeleteAccountAsync(int accountId);
         Task UpdateAccountAsync(int accountId, AccountRequest accountReq);
+        Task<AccountEmployeeResponse> AuthenticateUser(AccountLoginRequest user);
     }
 
 

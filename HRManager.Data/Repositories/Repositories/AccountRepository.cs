@@ -1,6 +1,7 @@
 ﻿using HRManager.Data.Repositories.Interfaces;
 using HRManager.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 
 namespace HRManager.Data.Repositories.Repositories
@@ -16,12 +17,12 @@ namespace HRManager.Data.Repositories.Repositories
 
         public async Task<IEnumerable<Account>> GetAccountsAsync()
         {
-            return await context.Accounts.Include(a=>a.Employee).ToListAsync();
+            return await context.Accounts.Include(a=>a.Employee).ThenInclude(e => e.Photo).ToListAsync();
         }
 
         public async Task<Account> GetAccountByIdAsync(int accountId)
         {
-            return await context.Accounts.Include(a=>a.Employee).FirstOrDefaultAsync(a=>a.AccountID==accountId);
+            return await context.Accounts.Include(a=>a.Employee).ThenInclude(e => e.Photo).FirstOrDefaultAsync(a=>a.AccountID==accountId);
         }
 
         public async Task InsertAccountAsync(Account account)
@@ -51,6 +52,12 @@ namespace HRManager.Data.Repositories.Repositories
         public void Dispose()
         {
             context.Dispose();
+        }
+
+        public async Task<Account> GetAccountByUsernameAsync(string username)
+        {
+            var account = await context.Accounts.Include(a => a.Employee).ThenInclude(e => e.Photo).FirstOrDefaultAsync(a => a.Username == username);
+            return account;
         }
     }
 

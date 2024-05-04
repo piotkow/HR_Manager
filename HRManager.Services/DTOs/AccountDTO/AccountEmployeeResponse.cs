@@ -1,4 +1,5 @@
 ﻿using HRManager.Models.Enums;
+using HRManager.Services.DTOs.PhotoDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace HRManager.Services.DTOs.AccountDTO
         public string City { get; set; }
         public string Street { get; set; }
         public string PostalCode { get; set; }
+        public PhotoResponse? Photo { get; set; }
         public DateTime DateOfEmployment { get; set; }
     }
 }
