@@ -63,6 +63,7 @@ public class MappingProfile : Profile
         CreateMap<AbsenceRequest, Absence>()
             .ForMember(dest => dest.AbsenceID, opt => opt.Ignore())
             .ForMember(dest => dest.EmployeeID, opt => opt.MapFrom(src => src.EmployeeID))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))

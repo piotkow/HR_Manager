@@ -17,7 +17,7 @@ namespace HRManager.Data.UnitOfWork
         public IReportRepository ReportRepository { get; private set; } = new ReportRepository(context);
         public ITeamRepository TeamRepository { get; private set; } = new TeamRepository(context);
         public IAbsenceRepository AbsenceRepository { get; private set; } = new AbsenceRepository(context);
-
+        public IPhotoRepository PhotoRepository { get; private set; } = new PhotoRepository(context);
         public async Task SaveAsync()
         {
             await context.SaveChangesAsync();

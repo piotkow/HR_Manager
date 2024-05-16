@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using HRManager.Models.Entities;
 using HRManager.Models.Enums;
 using HRManager.Services.DTOs.AbsenceDTO;

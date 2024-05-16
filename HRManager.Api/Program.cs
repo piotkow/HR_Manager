@@ -1,8 +1,10 @@
 using AutoMapper;
+using Azure.Storage.Blobs;
 using HRManager.Data;
 using HRManager.Data.Repositories.Interfaces;
 using HRManager.Data.Repositories.Repositories;
 using HRManager.Data.UnitOfWork;
+using HRManager.Models.Enums;
 using HRManager.Services.Interfaces;
 using HRManager.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,7 +24,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
     opt.SwaggerDoc("v1", new OpenApiInfo { Title = "API IP32", Version = "v1" });
-
     opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -72,6 +73,11 @@ builder.Services.AddAuthorization();
 builder.Services.AddDbContext<HRManagerDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped(_ =>
+{
+    return new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage"));
+});
+
 
 
 var mapperConfig = new MapperConfiguration(mc =>
@@ -90,6 +96,8 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IPositionService, PositionService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
+
 
 
 // Add services to the container.

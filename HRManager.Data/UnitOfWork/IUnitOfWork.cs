@@ -11,6 +11,7 @@ namespace HRManager.Data.UnitOfWork
         IReportRepository ReportRepository { get; }
         ITeamRepository TeamRepository { get; }
         IAbsenceRepository AbsenceRepository { get; }
+        IPhotoRepository PhotoRepository { get; }
         Task SaveAsync();
         Task BeginTransactionAsync();
         Task CommitAsync();

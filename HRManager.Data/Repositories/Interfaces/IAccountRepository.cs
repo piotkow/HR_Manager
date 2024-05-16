@@ -1,4 +1,4 @@
-﻿phousing HRManager.Models.Entities;
+﻿using HRManager.Models.Entities;
 
 namespace HRManager.Data.Repositories.Interfaces
 {

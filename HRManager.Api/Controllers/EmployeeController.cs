@@ -49,15 +49,15 @@ namespace HRManager.Api.Controllers
         }
 
         [HttpPost("upload-photo")]
-        public async Task<ActionResult<PhotoResponse>> UploadPhoto(int employeeId, IFormFile photo)
+        public async Task<ActionResult<PhotoResponse>> UploadPhoto([FromForm]IFormFile photo)
         {
 
-            var user = await _employeeService.GetEmployeeByIdAsync(employeeId);
+            //var user = await _employeeService.GetEmployeeByIdAsync(employeeId);
 
-            if (user == null)
-            {
-                return NotFound();
-            }
+            //if (user == null)
+            //{
+            //    return NotFound();
+            //}
 
 
             if (photo == null)
@@ -73,29 +73,29 @@ namespace HRManager.Api.Controllers
             }
 
 
-            if (user.Photo != null)
-            {
-                await DeletePhoto();
-            }
+            //if (user.Photo != null)
+            //{
+            //    await DeletePhoto(user.EmployeeID);
+            //}
 
             var result = await _photoService.UploadPhotoAsync(photo);
 
-            var photoEntity = new PhotoResponse
-            {
-                Filename = photo.FileName,
-                Uri = result.Uri.ToString()
-            };
+            //var photoEntity = new PhotoResponse
+            //{
+            //    Filename = photo.FileName,
+            //    Uri = result.Uri.ToString()
+            //};
 
-            user.Photo = photoEntity;
-            if (await _employeeService) return _mapper.Map<PhotoDto>(photoEntity);
+            //user.Photo = photoEntity;
+            if (result !=  null) return Ok(result);
             return BadRequest("Problem adding photo");
         }
 
         [HttpDelete("delete-photo")]
-        public async Task<IActionResult> DeletePhoto()
+        public async Task<IActionResult> DeletePhoto(int employeeId)
         {
 
-            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            var user = await _employeeService.GetEmployeeByIdAsync(employeeId);
 
 
             if (user == null)
@@ -105,11 +105,11 @@ namespace HRManager.Api.Controllers
 
             if (user.Photo != null)
             {
-                await _photoService.DeletePhotoAsync(user.Photo.Id, user.Photo.Uri, user.Photo.Filename);
+                await _photoService.DeletePhotoAsync(user.Photo.PhotoID, user.Photo.Uri, user.Photo.Filename);
             }
 
 
-            if (await _userRepository.SaveAllAsync()) return Ok("Deleted");
+            if (user.Photo == null) return Ok("Deleted");
             return BadRequest("Problem deleting photo");
         }
 

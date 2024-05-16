@@ -35,6 +35,12 @@ namespace HRManager.Services.Services
             return _mapper.Map<AccountEmployeeResponse>(account);
         }
 
+        public async Task<AccountEmployeeResponse> GetAccountByUsernameAsync(string username)
+        {
+            var account = await _unitOfWork.AccountRepository.GetAccountByUsernameAsync(username);
+            return _mapper.Map<AccountEmployeeResponse>(account);
+        }
+
         public async Task<Account> InsertAccountAsync(AccountRequest accountReq)
         {
             await _unitOfWork.BeginTransactionAsync();
