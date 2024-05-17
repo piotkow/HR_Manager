@@ -6,6 +6,7 @@ namespace HRManager.Data.Repositories.Interfaces
     {
         Task<IEnumerable<Employee>> GetEmployeesAsync();
         Task<Employee> GetEmployeeByIdAsync(int employeeId);
+        Task<IEnumerable<Employee>> GetEmployeesByTeamIdAsync(int teamId);
         Task InsertEmployeeAsync(Employee employee);
         Task DeleteEmployeeAsync(int employeeId);
         Task UpdateEmployeeAsync(Employee employee);

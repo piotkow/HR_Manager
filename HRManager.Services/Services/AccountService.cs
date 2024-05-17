@@ -1,14 +1,8 @@
 ﻿using AutoMapper;
-using HRManager.Data.Repositories.Interfaces;
 using HRManager.Data.UnitOfWork;
 using HRManager.Models.Entities;
 using HRManager.Services.DTOs.AccountDTO;
 using HRManager.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HRManager.Services.Services
 {

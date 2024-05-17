@@ -60,6 +60,11 @@ namespace HRManager.Services.Services
             await _unitOfWork.CommitAsync();
         }
 
+        public async Task<IEnumerable<EmployeePositionTeamResponse>> GetEmployeeByTeamIdAsync(int teamId)
+        {
+            var employees = await _unitOfWork.EmployeeRepository.GetEmployeesByTeamIdAsync(teamId);
+            return _mapper.Map<IEnumerable<EmployeePositionTeamResponse>>(employees);
+        }
     }
 
 }

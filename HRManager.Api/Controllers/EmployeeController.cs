@@ -28,6 +28,13 @@ namespace HRManager.Api.Controllers
             return employees;
         }
 
+        [HttpGet("byTeam/{teamId}")]
+        public async Task<IEnumerable<EmployeePositionTeamResponse>> GetEmployeesByTeamId(int teamId)
+        {
+            var employees = await _employeeService.GetEmployeeByTeamIdAsync(teamId);
+            return employees;
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<EmployeePositionTeamResponse>> GetEmployeeById(int id)
         {

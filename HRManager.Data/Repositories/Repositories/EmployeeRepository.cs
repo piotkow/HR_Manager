@@ -52,5 +52,10 @@ namespace HRManager.Data.Repositories.Repositories
         {
             context.Dispose();
         }
+
+        public async Task<IEnumerable<Employee>> GetEmployeesByTeamIdAsync(int teamId)
+        {
+            return await context.Employees.Include(e=>e.Team).Include(e=>e.Position).Include(e=>e.Photo).Where(e=>e.TeamID==teamId).ToListAsync();
+        }
     }
 }
