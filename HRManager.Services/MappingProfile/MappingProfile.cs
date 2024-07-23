@@ -42,15 +42,23 @@ public class MappingProfile : Profile
 
 
 
-        CreateMap<Document, DocumentEmployeeResponse>();
+        CreateMap<Document, DocumentEmployeeResponse>()
+            .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Employee.FirstName))
+            .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Employee.LastName));
 
-        CreateMap<Photo, PhotoResponse>()
-            .ForMember(dest => dest.PhotoID, opt => opt.MapFrom(src => src.PhotoID))
+        CreateMap<Photo, FileResponse>()
+            .ForMember(dest => dest.FileID, opt => opt.MapFrom(src => src.PhotoID))
+            .ForMember(dest => dest.Uri, opt => opt.MapFrom(src => src.Uri));
+
+        CreateMap<Document, FileResponse>()
+            .ForMember(dest => dest.FileID, opt => opt.MapFrom(src => src.DocumentID))
             .ForMember(dest => dest.Uri, opt => opt.MapFrom(src => src.Uri));
 
         CreateMap<Employee, EmployeePositionTeamResponse>()
+            .ForMember(dest => dest.PositionID, opt => opt.MapFrom(src => src.Position.PositionID))
             .ForMember(dest => dest.PositionName, opt => opt.MapFrom(src => src.Position.PositionName))
             .ForMember(dest => dest.PositionDescription, opt => opt.MapFrom(src => src.Position.PositionDescription))
+            .ForMember(dest => dest.TeamID, opt => opt.MapFrom(src => src.Team.TeamID))
             .ForMember(dest => dest.TeamName, opt => opt.MapFrom(src => src.Team.TeamName))
             .ForMember(dest => dest.TeamDescription, opt => opt.MapFrom(src => src.Team.TeamDescription))
             .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Team.Department))
@@ -79,9 +87,9 @@ public class MappingProfile : Profile
         CreateMap<DocumentRequest, Document>()
             .ForMember(dest => dest.DocumentID, opt => opt.Ignore())
             .ForMember(dest => dest.EmployeeID, opt => opt.MapFrom(src => src.EmployeeID))
-            .ForMember(dest => dest.DocumentType, opt => opt.MapFrom(src => src.DocumentType))
             .ForMember(dest => dest.IssueDate, opt => opt.MapFrom(src => src.IssueDate))
-            .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content));
+            .ForMember(dest => dest.Filename, opt => opt.MapFrom(src => src.Filename))
+            .ForMember(dest => dest.Uri, opt => opt.MapFrom(src => src.Uri));
 
         CreateMap<EmployeeRequest, Employee>()
             .ForMember(dest => dest.EmployeeID, opt => opt.Ignore())

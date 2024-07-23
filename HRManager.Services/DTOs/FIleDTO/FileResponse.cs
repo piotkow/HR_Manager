@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace HRManager.Services.DTOs.PhotoDTO
 {
-    public class PhotoResponse
+    public class FileResponse
     {
-        public int PhotoID { get; set; }
+        public int FileID { get; set; }
         public string Filename { get; set; }
         public string Uri { get; set; }
     }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRManager.Data.Migrations
 {
     [DbContext(typeof(HRManagerDbContext))]
-    [Migration("20240309141122_absence-description")]
-    partial class absencedescription
+    [Migration("20240526174243_documentFile")]
+    partial class documentFile
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,8 +66,8 @@ namespace HRManager.Data.Migrations
                             AbsenceID = 1,
                             Description = "I need to take a 8 days off to complete Lego Star Wars",
                             EmployeeID = 1,
-                            EndDate = new DateTime(2024, 3, 6, 15, 11, 20, 850, DateTimeKind.Local).AddTicks(344),
-                            StartDate = new DateTime(2024, 3, 4, 15, 11, 20, 850, DateTimeKind.Local).AddTicks(338),
+                            EndDate = new DateTime(2024, 5, 23, 19, 42, 43, 456, DateTimeKind.Local).AddTicks(3454),
+                            StartDate = new DateTime(2024, 5, 21, 19, 42, 43, 456, DateTimeKind.Local).AddTicks(3451),
                             Status = 0
                         });
                 });
@@ -75,13 +75,16 @@ namespace HRManager.Data.Migrations
             modelBuilder.Entity("HRManager.Models.Entities.Account", b =>
                 {
                     b.Property<int>("AccountID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("EmployeeID")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AccountID"));
 
                     b.Property<int>("AccountType")
                         .HasMaxLength(20)
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeID")
                         .HasColumnType("int");
 
                     b.Property<string>("Password")
@@ -94,7 +97,7 @@ namespace HRManager.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.HasKey("AccountID", "EmployeeID");
+                    b.HasKey("AccountID");
 
                     b.HasIndex("EmployeeID")
                         .IsUnique();
@@ -105,26 +108,26 @@ namespace HRManager.Data.Migrations
                         new
                         {
                             AccountID = 1,
-                            EmployeeID = 1,
                             AccountType = 2,
-                            Password = "password123",
-                            Username = "john_doe"
+                            EmployeeID = 1,
+                            Password = "$2a$10$YxDw2YmiG1DheMCs2UlhjOMSWrr.SXMHdGu..6JNC8n/vnFAkVqDK",
+                            Username = "emp"
                         },
                         new
                         {
                             AccountID = 2,
-                            EmployeeID = 2,
                             AccountType = 1,
-                            Password = "hrpassword123",
-                            Username = "hr_user"
+                            EmployeeID = 2,
+                            Password = "$2a$10$q948TuYKqihClxWMU9WwXuVRebJiPYm8PCUXby9pGAatGHYez6aAi",
+                            Username = "hr"
                         },
                         new
                         {
                             AccountID = 3,
-                            EmployeeID = 3,
                             AccountType = 0,
-                            Password = "adminpassword123",
-                            Username = "admin_user"
+                            EmployeeID = 3,
+                            Password = "$2a$10$sAop1QcdbP3y4OtC60pwSuVfhe6q1MjCoJJfvLcaulNs/cZ5Ewodu",
+                            Username = "admin"
                         });
                 });
 
@@ -136,10 +139,6 @@ namespace HRManager.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentID"));
 
-                    b.Property<byte[]>("Content")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
                     b.Property<string>("DocumentType")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -148,8 +147,16 @@ namespace HRManager.Data.Migrations
                     b.Property<int>("EmployeeID")
                         .HasColumnType("int");
 
+                    b.Property<string>("Filename")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("IssueDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Uri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DocumentID");
 
@@ -161,10 +168,11 @@ namespace HRManager.Data.Migrations
                         new
                         {
                             DocumentID = 1,
-                            Content = new byte[] { 76, 111, 114, 101, 109, 32, 105, 112, 115, 117, 109, 32, 100, 111, 108, 111, 114, 32, 115, 105, 116, 32, 97, 109, 101, 116, 44, 32, 99, 111, 110, 115, 101, 99, 116, 101, 116, 117, 114, 32, 97, 100, 105, 112, 105, 115, 99, 105, 110, 103, 32, 101, 108, 105, 116, 46 },
                             DocumentType = "Resume",
                             EmployeeID = 1,
-                            IssueDate = new DateTime(2022, 3, 9, 15, 11, 20, 850, DateTimeKind.Local).AddTicks(394)
+                            Filename = "ImportantDocument",
+                            IssueDate = new DateTime(2022, 5, 26, 19, 42, 43, 456, DateTimeKind.Local).AddTicks(3490),
+                            Uri = "https://hrmanagerblob.blob.core.windows.net/documents/ImportantDocument.txt"
                         });
                 });
 
@@ -237,7 +245,7 @@ namespace HRManager.Data.Migrations
                             EmployeeID = 1,
                             City = "New York",
                             Country = "USA",
-                            DateOfEmployment = new DateTime(2022, 3, 9, 15, 11, 20, 849, DateTimeKind.Local).AddTicks(9975),
+                            DateOfEmployment = new DateTime(2022, 5, 26, 19, 42, 43, 456, DateTimeKind.Local).AddTicks(3360),
                             Email = "john.doe@example.com",
                             FirstName = "John",
                             LastName = "Doe",
@@ -252,7 +260,7 @@ namespace HRManager.Data.Migrations
                             EmployeeID = 2,
                             City = "Los Angeles",
                             Country = "USA",
-                            DateOfEmployment = new DateTime(2023, 3, 9, 15, 11, 20, 850, DateTimeKind.Local).AddTicks(152),
+                            DateOfEmployment = new DateTime(2023, 5, 26, 19, 42, 43, 456, DateTimeKind.Local).AddTicks(3411),
                             Email = "alice.smith@example.com",
                             FirstName = "Alice",
                             LastName = "Smith",
@@ -267,7 +275,7 @@ namespace HRManager.Data.Migrations
                             EmployeeID = 3,
                             City = "Chicago",
                             Country = "USA",
-                            DateOfEmployment = new DateTime(2024, 3, 9, 15, 11, 20, 850, DateTimeKind.Local).AddTicks(156),
+                            DateOfEmployment = new DateTime(2024, 5, 26, 19, 42, 43, 456, DateTimeKind.Local).AddTicks(3414),
                             Email = "bob.johnson@example.com",
                             FirstName = "Bob",
                             LastName = "Johnson",
@@ -276,6 +284,56 @@ namespace HRManager.Data.Migrations
                             PostalCode = "60601",
                             Street = "789 Circle Ave",
                             TeamID = 3
+                        });
+                });
+
+            modelBuilder.Entity("HRManager.Models.Entities.Photo", b =>
+                {
+                    b.Property<int>("PhotoID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PhotoID"));
+
+                    b.Property<int>("EmployeeID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Filename")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Uri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PhotoID");
+
+                    b.HasIndex("EmployeeID")
+                        .IsUnique();
+
+                    b.ToTable("Photos");
+
+                    b.HasData(
+                        new
+                        {
+                            PhotoID = 1,
+                            EmployeeID = 1,
+                            Filename = "JohnDoe.jpg",
+                            Uri = "https://hrmanagerblob.blob.core.windows.net/avatars/JohnDoe.jpg"
+                        },
+                        new
+                        {
+                            PhotoID = 2,
+                            EmployeeID = 2,
+                            Filename = "AliceSmith.jpg",
+                            Uri = "https://hrmanagerblob.blob.core.windows.net/avatars/AliceSmith.jpg"
+                        },
+                        new
+                        {
+                            PhotoID = 3,
+                            EmployeeID = 3,
+                            Filename = "BobJohnson.jpg",
+                            Uri = "https://hrmanagerblob.blob.core.windows.net/avatars/BobJohnson.jpg"
                         });
                 });
 
@@ -382,6 +440,10 @@ namespace HRManager.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TeamID"));
 
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("TeamDescription")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -400,20 +462,23 @@ namespace HRManager.Data.Migrations
                         new
                         {
                             TeamID = 1,
+                            Department = "Development",
                             TeamDescription = "Responsible for software development",
-                            TeamName = "Development"
+                            TeamName = "Development Team"
                         },
                         new
                         {
                             TeamID = 2,
+                            Department = "Human Resources",
                             TeamDescription = "Manages HR activities and policies",
-                            TeamName = "Human Resources"
+                            TeamName = "Human Resources Team"
                         },
                         new
                         {
                             TeamID = 3,
+                            Department = "IT",
                             TeamDescription = "Provides IT support and infrastructure management",
-                            TeamName = "IT Support"
+                            TeamName = "IT Support Team"
                         });
                 });
 
@@ -469,6 +534,17 @@ namespace HRManager.Data.Migrations
                     b.Navigation("Team");
                 });
 
+            modelBuilder.Entity("HRManager.Models.Entities.Photo", b =>
+                {
+                    b.HasOne("HRManager.Models.Entities.Employee", "Employee")
+                        .WithOne("Photo")
+                        .HasForeignKey("HRManager.Models.Entities.Photo", "EmployeeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("HRManager.Models.Entities.Report", b =>
                 {
                     b.HasOne("HRManager.Models.Entities.Employee", "Author")
@@ -498,6 +574,9 @@ namespace HRManager.Data.Migrations
                     b.Navigation("AuthoredReports");
 
                     b.Navigation("Documents");
+
+                    b.Navigation("Photo")
+                        .IsRequired();
 
                     b.Navigation("ReportsAboutEmployee");
                 });

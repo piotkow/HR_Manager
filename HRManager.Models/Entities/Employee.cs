@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HRManager.Models.Entities
 {
@@ -36,11 +37,10 @@ namespace HRManager.Models.Entities
         [Required, ForeignKey("Positions")]
         public required int PositionID { get; set; }
 
-        [Required, ForeignKey("Teams")]
-        public required int TeamID { get; set; }
+        [ForeignKey("Teams"), AllowNull]
+        public int? TeamID { get; set; }
 
         public virtual Position Position { get; set; }
-
         public virtual Team Team { get; set; }
 
         public virtual Account Account { get; set; }

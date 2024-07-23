@@ -1,26 +1,54 @@
 ﻿using AutoMapper;
-using HRManager.Data.Repositories.Interfaces;
+using Azure.Storage.Blobs;
 using HRManager.Data.UnitOfWork;
-using HRManager.Models.Entities;
 using HRManager.Services.DTOs.DocumentDTO;
 using HRManager.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using HRManager.Models.Entities;
 
 namespace HRManager.Services.Services
 {
     public class DocumentService : IDocumentService
     {
+        private readonly BlobServiceClient _blobServiceClient;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public DocumentService(IUnitOfWork unitOfWork, IMapper mapper)
+        public DocumentService(IUnitOfWork unitOfWork, IMapper mapper, BlobServiceClient blobServiceClient)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _blobServiceClient = blobServiceClient;
+
+        }
+
+        public async Task<BlobClient> UploadDocumentAsync(IFormFile documentFile)
+        {
+            var containerInstance = _blobServiceClient.GetBlobContainerClient("documents");
+            var blobInstance = containerInstance.GetBlobClient(documentFile.FileName);
+
+            await blobInstance.UploadAsync(documentFile.OpenReadStream());
+            return blobInstance;
+        }
+
+        public async Task<bool> DeleteDocumentAsync(int documentId, string blobUri, string Filename)
+        {
+
+            var containerInstance = _blobServiceClient.GetBlobContainerClient("documents");
+            var blobName = Filename;
+            var blobInstance = containerInstance.GetBlobClient(blobName);
+
+
+            var document = await _unitOfWork.DocumentRepository.GetDocumentByIdAsync(documentId);
+
+            if (document != null && await blobInstance.ExistsAsync())
+            {
+                await blobInstance.DeleteIfExistsAsync();
+                await _unitOfWork.DocumentRepository.DeleteDocumentAsync(document.DocumentID);
+                await _unitOfWork.SaveAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task<IEnumerable<DocumentEmployeeResponse>> GetDocumentsAsync()
@@ -55,11 +83,16 @@ namespace HRManager.Services.Services
             await _unitOfWork.BeginTransactionAsync();
             var document = await _unitOfWork.DocumentRepository.GetDocumentByIdAsync(documentId);
             document.EmployeeID = documentReq.EmployeeID;
-            document.DocumentType = documentReq.DocumentType;
             document.IssueDate = documentReq.IssueDate;
-            document.Content = documentReq.Content;
+            //document.Content = documentReq.Content;
             await _unitOfWork.DocumentRepository.UpdateDocumentAsync(document);
             await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<IEnumerable<DocumentEmployeeResponse>> GetDocumentsByEmployeeIdAsync(int employeeId)
+        {
+            var documents = await _unitOfWork.DocumentRepository.GetDocumentsByEmployeeIdAsync(employeeId);
+            return _mapper.Map<IEnumerable<DocumentEmployeeResponse>>(documents);
         }
     }
 

@@ -12,14 +12,12 @@ namespace HRManager.Models.Entities
         [Required, ForeignKey("Employees")]
         public int EmployeeID { get; set; }
 
-        [Required, MaxLength(50)]
-        public required string DocumentType { get; set; }
-
         [Required]
         public DateTime IssueDate { get; set; }
 
-        [Required]
-        public required byte[] Content { get; set; }
+        public string Filename { get; set; }
+
+        public string Uri { get; set; }
 
         public virtual Employee Employee { get; set; }
     }

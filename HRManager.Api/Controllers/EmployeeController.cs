@@ -56,7 +56,7 @@ namespace HRManager.Api.Controllers
         }
 
         [HttpPost("upload-photo")]
-        public async Task<ActionResult<PhotoResponse>> UploadPhoto([FromForm]IFormFile photo)
+        public async Task<ActionResult<FileResponse>> UploadPhoto([FromForm]IFormFile photo)
         {
 
             //var user = await _employeeService.GetEmployeeByIdAsync(employeeId);
@@ -112,7 +112,7 @@ namespace HRManager.Api.Controllers
 
             if (user.Photo != null)
             {
-                await _photoService.DeletePhotoAsync(user.Photo.PhotoID, user.Photo.Uri, user.Photo.Filename);
+                await _photoService.DeletePhotoAsync(user.Photo.FileID, user.Photo.Uri, user.Photo.Filename);
             }
 
 

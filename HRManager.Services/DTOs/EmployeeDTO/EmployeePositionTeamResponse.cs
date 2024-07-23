@@ -20,11 +20,13 @@ namespace HRManager.Services.DTOs.EmployeeDTO
         public string Street { get; set; }
         public string PostalCode { get; set; }
         public DateTime DateOfEmployment { get; set; }
+        public int PositionID { get; set; }
         public string PositionName { get; set; }
         public string PositionDescription { get; set; }
+        public int TeamID { get; set; }
         public string TeamName { get; set; }
         public string TeamDescription { get; set; }
         public string Department { get; set; }
-        public PhotoResponse Photo { get; set;}
+        public FileResponse Photo { get; set;}
     }
 }

@@ -20,7 +20,6 @@ namespace HRManager.Services.DTOs.EmployeeDTO
         public string PostalCode { get; set; }
         public DateTime DateOfEmployment { get; set; }
         public int PositionID { get; set; }
-        public int TeamID { get; set; }
+        public int? TeamID { get; set; }
     }
-
 }

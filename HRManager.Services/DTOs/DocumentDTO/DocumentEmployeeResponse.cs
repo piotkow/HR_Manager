@@ -8,10 +8,12 @@ namespace HRManager.Services.DTOs.DocumentDTO
 {
     public class DocumentEmployeeResponse
     {
+        public int DocumentID { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string DocumentType { get; set; }
         public DateTime IssueDate { get; set; }
-        public byte[] Content { get; set; }
+        public string Filename { get; set; }
+        public string Uri { get; set; }
+
     }
 }

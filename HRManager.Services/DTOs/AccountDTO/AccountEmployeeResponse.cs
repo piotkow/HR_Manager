@@ -22,7 +22,7 @@ namespace HRManager.Services.DTOs.AccountDTO
         public string City { get; set; }
         public string Street { get; set; }
         public string PostalCode { get; set; }
-        public PhotoResponse? Photo { get; set; }
+        public FileResponse? Photo { get; set; }
         public DateTime DateOfEmployment { get; set; }
     }
 }

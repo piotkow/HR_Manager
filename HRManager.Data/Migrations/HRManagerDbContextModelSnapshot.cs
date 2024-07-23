@@ -63,8 +63,8 @@ namespace HRManager.Data.Migrations
                             AbsenceID = 1,
                             Description = "I need to take a 8 days off to complete Lego Star Wars",
                             EmployeeID = 1,
-                            EndDate = new DateTime(2024, 3, 19, 12, 6, 0, 920, DateTimeKind.Local).AddTicks(184),
-                            StartDate = new DateTime(2024, 3, 17, 12, 6, 0, 920, DateTimeKind.Local).AddTicks(179),
+                            EndDate = new DateTime(2024, 7, 20, 22, 14, 46, 942, DateTimeKind.Local).AddTicks(4397),
+                            StartDate = new DateTime(2024, 7, 18, 22, 14, 46, 942, DateTimeKind.Local).AddTicks(4394),
                             Status = 0
                         });
                 });
@@ -72,13 +72,16 @@ namespace HRManager.Data.Migrations
             modelBuilder.Entity("HRManager.Models.Entities.Account", b =>
                 {
                     b.Property<int>("AccountID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("EmployeeID")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AccountID"));
 
                     b.Property<int>("AccountType")
                         .HasMaxLength(20)
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeID")
                         .HasColumnType("int");
 
                     b.Property<string>("Password")
@@ -91,7 +94,7 @@ namespace HRManager.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.HasKey("AccountID", "EmployeeID");
+                    b.HasKey("AccountID");
 
                     b.HasIndex("EmployeeID")
                         .IsUnique();
@@ -102,26 +105,26 @@ namespace HRManager.Data.Migrations
                         new
                         {
                             AccountID = 1,
-                            EmployeeID = 1,
                             AccountType = 2,
-                            Password = "password123",
-                            Username = "john_doe"
+                            EmployeeID = 1,
+                            Password = "$2a$10$YxDw2YmiG1DheMCs2UlhjOMSWrr.SXMHdGu..6JNC8n/vnFAkVqDK",
+                            Username = "emp"
                         },
                         new
                         {
                             AccountID = 2,
-                            EmployeeID = 2,
                             AccountType = 1,
-                            Password = "hrpassword123",
-                            Username = "hr_user"
+                            EmployeeID = 2,
+                            Password = "$2a$10$q948TuYKqihClxWMU9WwXuVRebJiPYm8PCUXby9pGAatGHYez6aAi",
+                            Username = "hr"
                         },
                         new
                         {
                             AccountID = 3,
-                            EmployeeID = 3,
                             AccountType = 0,
-                            Password = "adminpassword123",
-                            Username = "admin_user"
+                            EmployeeID = 3,
+                            Password = "$2a$10$sAop1QcdbP3y4OtC60pwSuVfhe6q1MjCoJJfvLcaulNs/cZ5Ewodu",
+                            Username = "admin"
                         });
                 });
 
@@ -133,20 +136,19 @@ namespace HRManager.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentID"));
 
-                    b.Property<byte[]>("Content")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("DocumentType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<int>("EmployeeID")
                         .HasColumnType("int");
 
+                    b.Property<string>("Filename")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("IssueDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Uri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DocumentID");
 
@@ -158,10 +160,10 @@ namespace HRManager.Data.Migrations
                         new
                         {
                             DocumentID = 1,
-                            Content = new byte[] { 76, 111, 114, 101, 109, 32, 105, 112, 115, 117, 109, 32, 100, 111, 108, 111, 114, 32, 115, 105, 116, 32, 97, 109, 101, 116, 44, 32, 99, 111, 110, 115, 101, 99, 116, 101, 116, 117, 114, 32, 97, 100, 105, 112, 105, 115, 99, 105, 110, 103, 32, 101, 108, 105, 116, 46 },
-                            DocumentType = "Resume",
                             EmployeeID = 1,
-                            IssueDate = new DateTime(2022, 3, 22, 12, 6, 0, 920, DateTimeKind.Local).AddTicks(233)
+                            Filename = "ImportantDocument",
+                            IssueDate = new DateTime(2022, 7, 23, 22, 14, 46, 942, DateTimeKind.Local).AddTicks(4430),
+                            Uri = "https://hrmanagerblob.blob.core.windows.net/documents/ImportantDocument.txt"
                         });
                 });
 
@@ -217,7 +219,7 @@ namespace HRManager.Data.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<int>("TeamID")
+                    b.Property<int?>("TeamID")
                         .HasColumnType("int");
 
                     b.HasKey("EmployeeID");
@@ -234,7 +236,7 @@ namespace HRManager.Data.Migrations
                             EmployeeID = 1,
                             City = "New York",
                             Country = "USA",
-                            DateOfEmployment = new DateTime(2022, 3, 22, 12, 6, 0, 919, DateTimeKind.Local).AddTicks(9904),
+                            DateOfEmployment = new DateTime(2022, 7, 23, 22, 14, 46, 942, DateTimeKind.Local).AddTicks(4309),
                             Email = "john.doe@example.com",
                             FirstName = "John",
                             LastName = "Doe",
@@ -249,7 +251,7 @@ namespace HRManager.Data.Migrations
                             EmployeeID = 2,
                             City = "Los Angeles",
                             Country = "USA",
-                            DateOfEmployment = new DateTime(2023, 3, 22, 12, 6, 0, 919, DateTimeKind.Local).AddTicks(9957),
+                            DateOfEmployment = new DateTime(2023, 7, 23, 22, 14, 46, 942, DateTimeKind.Local).AddTicks(4357),
                             Email = "alice.smith@example.com",
                             FirstName = "Alice",
                             LastName = "Smith",
@@ -264,7 +266,7 @@ namespace HRManager.Data.Migrations
                             EmployeeID = 3,
                             City = "Chicago",
                             Country = "USA",
-                            DateOfEmployment = new DateTime(2024, 3, 22, 12, 6, 0, 919, DateTimeKind.Local).AddTicks(9962),
+                            DateOfEmployment = new DateTime(2024, 7, 23, 22, 14, 46, 942, DateTimeKind.Local).AddTicks(4359),
                             Email = "bob.johnson@example.com",
                             FirstName = "Bob",
                             LastName = "Johnson",
@@ -515,8 +517,7 @@ namespace HRManager.Data.Migrations
                     b.HasOne("HRManager.Models.Entities.Team", "Team")
                         .WithMany("Employees")
                         .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Position");
 

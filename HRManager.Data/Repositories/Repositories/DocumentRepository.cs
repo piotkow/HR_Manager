@@ -52,5 +52,10 @@ namespace HRManager.Data.Repositories.Repositories
         {
             context.Dispose();
         }
+
+        public async Task<IEnumerable<Document>> GetDocumentsByEmployeeIdAsync(int employeeId)
+        {
+            return await context.Documents.Include(d=>d.Employee).Where(d=>d.EmployeeID==employeeId).ToListAsync();
+        }
     }
 }

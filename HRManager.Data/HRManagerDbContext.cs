@@ -26,8 +26,8 @@ namespace HRManager.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Account>().HasKey(a => new { a.AccountID, a.EmployeeID });
-            modelBuilder.Entity<Document>().Property(p => p.Content).HasColumnType("varbinary(max)");
+            //modelBuilder.Entity<Account>().HasKey(a => new { a.AccountID, a.EmployeeID });
+            //modelBuilder.Entity<Document>().Property(p => p.Content).HasColumnType("varbinary(max)");
 
             // Employee ONE - ONE Account
             modelBuilder.Entity<Employee>()
@@ -79,7 +79,6 @@ namespace HRManager.Data
                 .HasOne(e => e.Team)
                 .WithMany(t => t.Employees)
                 .HasForeignKey(e => e.TeamID)
-                .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Employee ONE - ONE Photo
@@ -89,6 +88,53 @@ namespace HRManager.Data
                 .HasForeignKey<Photo>(e => e.EmployeeID)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Seed Positions
+            modelBuilder.Entity<Position>().HasData(
+                new Position
+                {
+                    PositionID = 1,
+                    PositionName = "Software Engineer",
+                    PositionDescription = "Develop software applications"
+                },
+                new Position
+                {
+                    PositionID = 2,
+                    PositionName = "HR Manager",
+                    PositionDescription = "Manage HR activities"
+                },
+                new Position
+                {
+                    PositionID = 3,
+                    PositionName = "System Administrator",
+                    PositionDescription = "Manage and maintain system infrastructure"
+                }
+            // Add more positions as needed
+            );
+
+            modelBuilder.Entity<Team>().HasData(
+                new Team
+                {
+                    TeamID = 1,
+                    TeamName = "Development Team",
+                    Department = "Development",
+                    TeamDescription = "Responsible for software development"
+                },
+                new Team
+                {
+                    TeamID = 2,
+                    TeamName = "Human Resources Team",
+                    Department = "Human Resources",
+                    TeamDescription = "Manages HR activities and policies"
+                },
+                new Team
+                {
+                    TeamID = 3,
+                    TeamName = "IT Support Team",
+                    Department = "IT",
+                    TeamDescription = "Provides IT support and infrastructure management"
+                }
+            );
 
             // Seed Employees
             modelBuilder.Entity<Employee>().HasData(
@@ -164,29 +210,6 @@ namespace HRManager.Data
                 }
             );
 
-            // Seed Positions
-            modelBuilder.Entity<Position>().HasData(
-                new Position
-                {
-                    PositionID = 1,
-                    PositionName = "Software Engineer",
-                    PositionDescription = "Develop software applications"
-                },
-                new Position
-                {
-                    PositionID = 2,
-                    PositionName = "HR Manager",
-                    PositionDescription = "Manage HR activities"
-                },
-                new Position
-                {
-                    PositionID = 3,
-                    PositionName = "System Administrator",
-                    PositionDescription = "Manage and maintain system infrastructure"
-                }
-            // Add more positions as needed
-            );
-
             // Seed Absences
             modelBuilder.Entity<Absence>().HasData(
                 new Absence
@@ -208,24 +231,24 @@ namespace HRManager.Data
                 {
                     AccountID = 1,
                     EmployeeID = 1,
-                    Username = "john_doe",
-                    Password = "password123",
+                    Username = "emp",
+                    Password = "$2a$10$YxDw2YmiG1DheMCs2UlhjOMSWrr.SXMHdGu..6JNC8n/vnFAkVqDK",
                     AccountType = Role.Employee
                 },
                 new Account
                 {
                     AccountID = 2,
                     EmployeeID = 2,
-                    Username = "hr_user",
-                    Password = "hrpassword123",
+                    Username = "hr",
+                    Password = "$2a$10$q948TuYKqihClxWMU9WwXuVRebJiPYm8PCUXby9pGAatGHYez6aAi",
                     AccountType = Role.HR
                 },
                 new Account
                 {
                     AccountID = 3,
                     EmployeeID = 3,
-                    Username = "admin_user",
-                    Password = "adminpassword123",
+                    Username = "admin",
+                    Password = "$2a$10$sAop1QcdbP3y4OtC60pwSuVfhe6q1MjCoJJfvLcaulNs/cZ5Ewodu",
                     AccountType = Role.Admin
                 }
             // Add more accounts as needed
@@ -237,9 +260,10 @@ namespace HRManager.Data
                 {
                     DocumentID = 1,
                     EmployeeID = 1,
-                    DocumentType = "Resume",
                     IssueDate = DateTime.Now.AddYears(-2),
-                    Content = Encoding.UTF8.GetBytes("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
+                    Filename = "ImportantDocument",
+                    Uri= "https://hrmanagerblob.blob.core.windows.net/documents/ImportantDocument.txt"
+                    //Content = Encoding.UTF8.GetBytes("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
                 }
                 // Add more documents as needed
             );
@@ -255,30 +279,6 @@ namespace HRManager.Data
                     Result = true,
                     AuthorID = 1,
                     EmployeeID = 1
-                }
-            );
-
-            modelBuilder.Entity<Team>().HasData(
-                new Team
-                {
-                    TeamID = 1,
-                    TeamName = "Development Team",
-                    Department = "Development",
-                    TeamDescription = "Responsible for software development"
-                },
-                new Team
-                {
-                    TeamID = 2,
-                    TeamName = "Human Resources Team",
-                    Department = "Human Resources",
-                    TeamDescription = "Manages HR activities and policies"
-                },
-                new Team
-                {
-                    TeamID = 3,
-                    TeamName = "IT Support Team",
-                    Department = "IT",
-                    TeamDescription = "Provides IT support and infrastructure management"
                 }
             );
 
