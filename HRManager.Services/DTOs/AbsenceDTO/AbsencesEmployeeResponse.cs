@@ -9,6 +9,7 @@ namespace HRManager.Services.DTOs.AbsenceDTO
 {
     public class AbsencesEmployeeResponse
     {
+        public int AbsenceId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Description {  get; set; }

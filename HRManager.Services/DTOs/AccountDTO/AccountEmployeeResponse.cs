@@ -11,6 +11,7 @@ namespace HRManager.Services.DTOs.AccountDTO
     public class AccountEmployeeResponse
     {
         public int AccountID { get; set; }
+        public int EmployeeID { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public Role AccountType { get; set; }

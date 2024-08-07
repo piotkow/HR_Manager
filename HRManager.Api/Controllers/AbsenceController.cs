@@ -67,6 +67,13 @@ namespace YourApi.Controllers
             var absences = await _absenceService.GetAbsencesByStatusAsync(status);
             return absences;
         }
+
+        [HttpGet("byEmployee")]
+        public async Task<IEnumerable<AbsencesEmployeeResponse>> GetAbsencesByEmployee(int employeeId)
+        {
+            var absences = await _absenceService.GetAbsencesByEmployeeAsync(employeeId);
+            return absences;
+        }
     }
 
 }

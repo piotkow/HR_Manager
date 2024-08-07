@@ -26,6 +26,7 @@ public class MappingProfile : Profile
 
         CreateMap<Account, AccountEmployeeResponse>()
             .ForMember(dest => dest.AccountID, opt => opt.MapFrom(src => src.AccountID))
+            .ForMember(dest => dest.EmployeeID, opt => opt.MapFrom(src => src.EmployeeID))
             .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Username))
             .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password))
             .ForMember(dest => dest.AccountType, opt => opt.MapFrom(src => src.AccountType))

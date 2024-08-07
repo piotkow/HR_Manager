@@ -58,6 +58,11 @@ namespace HRManager.Data.Repositories.Repositories
         {
             context.Dispose();
         }
+
+        public async Task<IEnumerable<Absence>> GetAbsencesByEmployeeAsync(int employeeId)
+        {
+            return await context.Absences.Where(a => a.EmployeeID == employeeId).ToListAsync();
+        }
     }
 
 
