@@ -39,7 +39,7 @@ namespace HRManager.Api.Controllers
             return document;
         }
 
-        [HttpGet("/byEmployee/{employeeId}")]
+        [HttpGet("byEmployee/{employeeId}")]
         public async Task<IEnumerable<DocumentEmployeeResponse>> GetDocumentEmployeeId(int employeeId)
         {
             var documents = await _documentService.GetDocumentsByEmployeeIdAsync(employeeId);

@@ -68,7 +68,7 @@ namespace YourApi.Controllers
             return absences;
         }
 
-        [HttpGet("byEmployee")]
+        [HttpGet("byEmployee/{employeeId}")]
         public async Task<IEnumerable<AbsencesEmployeeResponse>> GetAbsencesByEmployee(int employeeId)
         {
             var absences = await _absenceService.GetAbsencesByEmployeeAsync(employeeId);
