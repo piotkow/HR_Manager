@@ -71,6 +71,21 @@ namespace HRManager.Services.Services
             var absences = await _unitOfWork.AbsenceRepository.GetAbsencesByEmployeeAsync(employeeId);
             return _mapper.Map<IEnumerable<AbsencesEmployeeResponse>>(absences);
         }
+
+        public async Task<IEnumerable<AbsencesEmployeeResponse>> GetAbsencesByTeamAsync(int teamId)
+        {
+            var absences = await _unitOfWork.AbsenceRepository.GetAbsencesByTeamAsync(teamId);
+            return _mapper.Map<IEnumerable<AbsencesEmployeeResponse>>(absences);
+        }
+
+        public async Task<Absence> UpdateAbsenceStatusAsync(int absenceId, Status status)
+        {
+            await _unitOfWork.BeginTransactionAsync();
+            var absence = await _unitOfWork.AbsenceRepository.GetAbsenceByIdAsync(absenceId);
+            absence.Status = status;
+            await _unitOfWork.CommitAsync();
+            return absence;
+        }
     }
 
 }

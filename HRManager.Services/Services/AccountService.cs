@@ -89,6 +89,12 @@ namespace HRManager.Services.Services
                 return null;
             }
         }
+
+        public async Task<AccountEmployeeResponse> GetAccountByEmployeeAsync(int employeeId)
+        {
+            var account =  await _unitOfWork.AccountRepository.GetAccountByEmployeeAsync(employeeId);
+            return _mapper.Map<AccountEmployeeResponse>(account);
+        }
     }
 
 }

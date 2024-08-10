@@ -39,7 +39,8 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Street, opt => opt.MapFrom(src => src.Employee.Street))
             .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.Employee.PostalCode))
             .ForMember(dest => dest.DateOfEmployment, opt => opt.MapFrom(src => src.Employee.DateOfEmployment))
-            .ForMember(dest => dest.Photo, opt => opt.MapFrom(src => src.Employee.Photo));
+            .ForMember(dest => dest.Photo, opt => opt.MapFrom(src => src.Employee.Photo))
+            .ForMember(dest => dest.TeamID, opt => opt.MapFrom(src => src.Employee.TeamID));
 
 
 

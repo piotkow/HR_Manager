@@ -47,7 +47,7 @@ namespace HRManager.Data
 
             // Konfiguracja relacji dla Report
             modelBuilder.Entity<Report>()
-                .HasOne(r => r.Author)
+                .HasOne(r => r.Author) 
                 .WithMany(e => e.AuthoredReports)
                 .HasForeignKey(r => r.AuthorID)
                 .OnDelete(DeleteBehavior.Restrict);

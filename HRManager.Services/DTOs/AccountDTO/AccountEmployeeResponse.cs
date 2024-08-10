@@ -25,5 +25,6 @@ namespace HRManager.Services.DTOs.AccountDTO
         public string PostalCode { get; set; }
         public FileResponse? Photo { get; set; }
         public DateTime DateOfEmployment { get; set; }
+        public int TeamID { get; set; }
     }
 }

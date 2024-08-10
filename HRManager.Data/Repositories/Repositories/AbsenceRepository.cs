@@ -22,7 +22,7 @@ namespace HRManager.Data.Repositories.Repositories
 
         public async Task<Absence> GetAbsenceByIdAsync(int absenceId)
         {
-            return await context.Absences.Include(e=>e.Employee).FirstOrDefaultAsync(a => a.AbsenceID==absenceId);
+            return await context.Absences.FirstOrDefaultAsync(a => a.AbsenceID==absenceId);
         }
 
         public async Task InsertAbsenceAsync(Absence absence)
@@ -63,6 +63,12 @@ namespace HRManager.Data.Repositories.Repositories
         {
             return await context.Absences.Where(a => a.EmployeeID == employeeId).ToListAsync();
         }
+
+        public async Task<IEnumerable<Absence>> GetAbsencesByTeamAsync(int teamId)
+        {
+            return await context.Absences.Include(a=>a.Employee).ThenInclude(e => e.Team).Where(a => a.Employee.Team.TeamID == teamId).ToListAsync();
+        }
+
     }
 
 

@@ -12,6 +12,7 @@ namespace HRManager.Services.Interfaces
     {
         Task<IEnumerable<AccountEmployeeResponse>> GetAccountsAsync();
         Task<AccountEmployeeResponse> GetAccountByIdAsync(int accountId);
+        Task<AccountEmployeeResponse> GetAccountByEmployeeAsync(int employeeId);
         Task<Account> InsertAccountAsync(AccountRequest accountReq);
         Task DeleteAccountAsync(int accountId);
         Task UpdateAccountAsync(int accountId, AccountRequest accountReq);

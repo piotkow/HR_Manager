@@ -59,6 +59,12 @@ namespace HRManager.Data.Repositories.Repositories
             var account = await context.Accounts.Include(a => a.Employee).ThenInclude(e => e.Photo).FirstOrDefaultAsync(a => a.Username == username);
             return account;
         }
+
+        public async Task<Account> GetAccountByEmployeeAsync(int employeeId)
+        {
+            var account = await context.Accounts.Include(a=>a.Employee).SingleOrDefaultAsync(e => e.EmployeeID==employeeId);
+            return account;
+        }
     }
 
 

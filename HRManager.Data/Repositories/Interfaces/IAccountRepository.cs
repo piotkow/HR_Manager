@@ -10,6 +10,7 @@ namespace HRManager.Data.Repositories.Interfaces
         Task DeleteAccountAsync(int accountId);
         Task UpdateAccountAsync(Account account);
         Task<Account> GetAccountByUsernameAsync(string username);
+        Task<Account> GetAccountByEmployeeAsync(int employeeId);
         Task SaveAsync();
     }
 

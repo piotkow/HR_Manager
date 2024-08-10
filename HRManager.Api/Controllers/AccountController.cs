@@ -37,6 +37,19 @@ namespace HRManager.Api.Controllers
             return account;
         }
 
+        [HttpGet("byEmployee/{employeeId}")]
+        public async Task<ActionResult<AccountEmployeeResponse>> GetAccountByEmployee(int employeeId)
+        {
+            var account = await _accountService.GetAccountByEmployeeAsync(employeeId);
+
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            return account;
+        }
+
         [HttpPost]
         public async Task<IActionResult> InsertAccount([FromBody]AccountRequest accountReq)
         {

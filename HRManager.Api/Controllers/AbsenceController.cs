@@ -61,6 +61,13 @@ namespace YourApi.Controllers
             return Ok(absenceReq);
         }
 
+        [HttpPut("updateStatus/{id}")]
+        public async Task<IActionResult> UpdateAbsence(int id, [FromBody] Status status)
+        {
+            var updatedAbsence = await _absenceService.UpdateAbsenceStatusAsync(id, status);
+            return Ok(updatedAbsence);
+        }
+
         [HttpGet("byStatus")]
         public async Task<IEnumerable<AbsencesEmployeeResponse>> GetAbsencesByStatus(Status status)
         {
@@ -72,6 +79,14 @@ namespace YourApi.Controllers
         public async Task<IEnumerable<AbsencesEmployeeResponse>> GetAbsencesByEmployee(int employeeId)
         {
             var absences = await _absenceService.GetAbsencesByEmployeeAsync(employeeId);
+            return absences;
+        }
+
+
+        [HttpGet("byTeam/{teamId}")]
+        public async Task<IEnumerable<AbsencesEmployeeResponse>> GetAbsencesByTeam(int teamId)
+        {
+            var absences = await _absenceService.GetAbsencesByTeamAsync(teamId);
             return absences;
         }
     }

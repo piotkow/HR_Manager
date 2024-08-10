@@ -8,6 +8,7 @@ namespace HRManager.Data.Repositories.Interfaces
         Task<IEnumerable<Absence>> GetAbsencesAsync();
         Task<Absence> GetAbsenceByIdAsync(int absenceId);
         Task<IEnumerable<Absence>> GetAbsencesByEmployeeAsync(int employeeId);
+        Task<IEnumerable<Absence>> GetAbsencesByTeamAsync(int teamId);
         Task InsertAbsenceAsync(Absence absence);
         Task DeleteAbsenceAsync(int absenceId);
         Task UpdateAbsenceAsync(Absence absence);

@@ -37,6 +37,7 @@ namespace HRManager.Api.Controllers
             return team;
         }
 
+
         [HttpPost]
         public async Task<IActionResult> InsertTeam([FromBody] TeamRequest teamReq)
         {
