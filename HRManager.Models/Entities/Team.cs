@@ -12,12 +12,14 @@ namespace HRManager.Models.Entities
         [Required, MaxLength(50)]
         public required string TeamName { get; set; }
 
-        [Required]
-        public required string Department {  get; set; }
+        [ForeignKey("DepartmentID")]
+        public int DepartmentID { get; set; }
 
         [MaxLength(200)]
         public required string TeamDescription { get; set; }
 
         public virtual ICollection<Employee> Employees { get; set; }
+
+        public virtual Department Department { get; set; }
     }
 }

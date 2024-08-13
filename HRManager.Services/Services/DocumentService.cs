@@ -40,8 +40,9 @@ namespace HRManager.Services.Services
 
 
             var document = await _unitOfWork.DocumentRepository.GetDocumentByIdAsync(documentId);
+            bool ifExistInAzure = await blobInstance.ExistsAsync();
 
-            if (document != null && await blobInstance.ExistsAsync())
+            if (document != null && ifExistInAzure)
             {
                 await blobInstance.DeleteIfExistsAsync();
                 await _unitOfWork.DocumentRepository.DeleteDocumentAsync(document.DocumentID);

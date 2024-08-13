@@ -18,6 +18,8 @@ namespace HRManager.Data
         public DbSet<Report> Reports { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<Photo> Photos { get; set; }
+        public DbSet<Department> Departments { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -89,6 +91,13 @@ namespace HRManager.Data
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // ONE Department - Team MANY
+            modelBuilder.Entity<Department>()
+                .HasMany(d=>d.Teams)
+                .WithOne(t => t.Department)
+                .HasForeignKey(t=>t.DepartmentID)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Seed Positions
             modelBuilder.Entity<Position>().HasData(
                 new Position
@@ -117,21 +126,21 @@ namespace HRManager.Data
                 {
                     TeamID = 1,
                     TeamName = "Development Team",
-                    Department = "Development",
+                    DepartmentID = 1,
                     TeamDescription = "Responsible for software development"
                 },
                 new Team
                 {
                     TeamID = 2,
                     TeamName = "Human Resources Team",
-                    Department = "Human Resources",
+                    DepartmentID = 2,
                     TeamDescription = "Manages HR activities and policies"
                 },
                 new Team
                 {
                     TeamID = 3,
                     TeamName = "IT Support Team",
-                    Department = "IT",
+                    DepartmentID = 3,
                     TeamDescription = "Provides IT support and infrastructure management"
                 }
             );
@@ -261,7 +270,7 @@ namespace HRManager.Data
                     DocumentID = 1,
                     EmployeeID = 1,
                     IssueDate = DateTime.Now.AddYears(-2),
-                    Filename = "ImportantDocument",
+                    Filename = "ImportantDocument.txt",
                     Uri= "https://hrmanagerblob.blob.core.windows.net/documents/ImportantDocument.txt"
                     //Content = Encoding.UTF8.GetBytes("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
                 }
@@ -282,6 +291,23 @@ namespace HRManager.Data
                 }
             );
 
+            modelBuilder.Entity<Department>().HasData(
+                new Department
+                {
+                    DerpartmentID = 1,
+                    Name = "Development",
+                },
+                new Department
+                {
+                    DerpartmentID = 2,
+                    Name = "Human Resources",
+                },
+                new Department
+                {
+                    DerpartmentID = 3,
+                    Name = "IT Support",
+                }
+                );
 
             base.OnModelCreating(modelBuilder);
         }

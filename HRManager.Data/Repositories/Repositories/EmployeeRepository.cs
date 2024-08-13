@@ -16,12 +16,12 @@ namespace HRManager.Data.Repositories.Repositories
 
         public async Task<IEnumerable<Employee>> GetEmployeesAsync()
         {
-            return await context.Employees.Include(e=>e.Position).Include(e=>e.Team).Include(e=>e.Photo).ToListAsync();
+            return await context.Employees.Include(e=>e.Position).Include(e=>e.Team).ThenInclude(t=>t.Department).Include(e=>e.Photo).ToListAsync();
         }
 
         public async Task<Employee> GetEmployeeByIdAsync(int employeeId)
         {
-            return await context.Employees.Include(e=>e.Position).Include(e=>e.Team).Include(e=>e.Photo).FirstOrDefaultAsync(e=>e.EmployeeID==employeeId);
+            return await context.Employees.Include(e=>e.Position).Include(e=>e.Team).ThenInclude(t => t.Department).Include(e=>e.Photo).FirstOrDefaultAsync(e=>e.EmployeeID==employeeId);
         }
 
         public async Task InsertEmployeeAsync(Employee employee)

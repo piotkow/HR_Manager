@@ -26,7 +26,7 @@ namespace HRManager.Services.DTOs.EmployeeDTO
         public int TeamID { get; set; }
         public string TeamName { get; set; }
         public string TeamDescription { get; set; }
-        public string Department { get; set; }
+        public string DepartmentName { get; set; }
         public FileResponse Photo { get; set;}
     }
 }

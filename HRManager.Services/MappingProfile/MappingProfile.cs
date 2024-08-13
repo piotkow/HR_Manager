@@ -2,6 +2,7 @@
 using HRManager.Models.Entities;
 using HRManager.Services.DTOs.AbsenceDTO;
 using HRManager.Services.DTOs.AccountDTO;
+using HRManager.Services.DTOs.DepartmentDTO;
 using HRManager.Services.DTOs.DocumentDTO;
 using HRManager.Services.DTOs.EmployeeDTO;
 using HRManager.Services.DTOs.PhotoDTO;
@@ -50,11 +51,16 @@ public class MappingProfile : Profile
 
         CreateMap<Photo, FileResponse>()
             .ForMember(dest => dest.FileID, opt => opt.MapFrom(src => src.PhotoID))
-            .ForMember(dest => dest.Uri, opt => opt.MapFrom(src => src.Uri));
+            .ForMember(dest => dest.Uri, opt => opt.MapFrom(src => src.Uri))
+            .ForMember(dest => dest.Filename, opt => opt.MapFrom(src => src.Filename));
 
         CreateMap<Document, FileResponse>()
             .ForMember(dest => dest.FileID, opt => opt.MapFrom(src => src.DocumentID))
             .ForMember(dest => dest.Uri, opt => opt.MapFrom(src => src.Uri));
+
+        CreateMap<Department, DepartmentResponse>()
+            .ForMember(dest => dest.DerpartmentID, opt => opt.MapFrom(src => src.DerpartmentID))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
 
         CreateMap<Employee, EmployeePositionTeamResponse>()
             .ForMember(dest => dest.PositionID, opt => opt.MapFrom(src => src.Position.PositionID))
@@ -63,12 +69,18 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.TeamID, opt => opt.MapFrom(src => src.Team.TeamID))
             .ForMember(dest => dest.TeamName, opt => opt.MapFrom(src => src.Team.TeamName))
             .ForMember(dest => dest.TeamDescription, opt => opt.MapFrom(src => src.Team.TeamDescription))
-            .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Team.Department))
+            .ForMember(dest => dest.DepartmentName , opt => opt.MapFrom(src => src.Team.Department.Name))
             .ForMember(dest => dest.Photo, opt => opt.MapFrom(src => src.Photo));
 
         CreateMap<Report, ReportEmployeeResponse>()
             .ForMember(dest => dest.Content, opt => opt.MapFrom(src => ConvertToByteArray(src.Content)))
             .ForMember(dest => dest.Severity, opt => opt.MapFrom(src => src.Severity.ToString()));
+
+        CreateMap<Team, TeamDepartmentResponse>()
+            .ForMember(dest => dest.TeamID, opt => opt.MapFrom(src => src.TeamID))
+            .ForMember(dest => dest.TeamName, opt => opt.MapFrom(src => src.TeamName))
+            .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Department.Name))
+            .ForMember(dest => dest.TeamDescription, opt => opt.MapFrom(src => src.TeamDescription));
 
         CreateMap<AbsenceRequest, Absence>()
             .ForMember(dest => dest.AbsenceID, opt => opt.Ignore())
@@ -113,6 +125,16 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.PositionName, opt => opt.MapFrom(src => src.PositionName))
             .ForMember(dest => dest.PositionDescription, opt => opt.MapFrom(src => src.PositionDescription));
 
+        CreateMap<DepartmentRequest, Department>()
+            .ForMember(dest => dest.DerpartmentID, opt => opt.Ignore())
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+
+        CreateMap<PhotoRequest, Photo>()
+            .ForMember(dest => dest.PhotoID, opt => opt.Ignore())
+            .ForMember(dest => dest.Filename, opt => opt.MapFrom(src => src.Filename))
+            .ForMember(dest => dest.Uri, opt => opt.MapFrom(src => src.Uri))
+            .ForMember(dest => dest.EmployeeID, opt => opt.MapFrom(src => src.EmployeeID));
+
         CreateMap<ReportRequest, Report>()
             .ForMember(dest => dest.ReportID, opt => opt.Ignore())
             .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
@@ -126,7 +148,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.TeamID, opt => opt.Ignore())
             .ForMember(dest => dest.TeamName, opt => opt.MapFrom(src => src.TeamName))
             .ForMember(dest => dest.TeamDescription, opt => opt.MapFrom(src => src.TeamDescription))
-            .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department));
+            .ForMember(dest => dest.DepartmentID, opt => opt.MapFrom(src => src.DepartmentID));
 
     }
 

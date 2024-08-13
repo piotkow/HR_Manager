@@ -24,16 +24,16 @@ namespace HRManager.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Team>> GetTeamsAsync()
+        public async Task<IEnumerable<TeamDepartmentResponse>> GetTeamsAsync()
         {
             var teams = await _unitOfWork.TeamRepository.GetTeamsAsync();
-            return teams;
+            return _mapper.Map<IEnumerable<TeamDepartmentResponse>>(teams);
         }
 
-        public async Task<Team> GetTeamByIdAsync(int teamId)
+        public async Task<TeamDepartmentResponse> GetTeamByIdAsync(int teamId)
         {
             var team = await _unitOfWork.TeamRepository.GetTeamByIdAsync(teamId);
-            return team;
+            return _mapper.Map<TeamDepartmentResponse>(team);
         }
 
         public async Task<Team> InsertTeamAsync(TeamRequest teamReq)

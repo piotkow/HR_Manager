@@ -18,14 +18,14 @@ namespace HRManager.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Team>> GetTeams()
+        public async Task<IEnumerable<TeamDepartmentResponse>> GetTeams()
         {
             var teams = await _teamService.GetTeamsAsync();
             return teams;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Team>> GetTeamById(int id)
+        public async Task<ActionResult<TeamDepartmentResponse>> GetTeamById(int id)
         {
             var team = await _teamService.GetTeamByIdAsync(id);
 
