@@ -1,4 +1,5 @@
-﻿using HRManager.Services.DTOs.PhotoDTO;
+﻿using HRManager.Models.Entities;
+using HRManager.Services.DTOs.PhotoDTO;
 using HRManager.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,8 +36,8 @@ namespace HRManager.Api.Controllers
             return photo;
         }
 
-        [HttpPost("upload-photo")]
-        public async Task<ActionResult> UploadPhoto(IFormFile photo)
+        [HttpPost("upload-photo/{employeeId}")]
+        public async Task<ActionResult> UploadPhoto(IFormFile photo, int employeeId)
         {
             if (photo == null)
             {
@@ -53,7 +54,7 @@ namespace HRManager.Api.Controllers
                 return BadRequest("Invalid file type. Only JPG and PNG images are allowed.");
             }
 
-            var result = await _photoService.UploadPhotoAsync(photo);
+            var result = await _photoService.UploadPhotoAsync(photo, employeeId);
             if (result != null) return Ok(result);
             return BadRequest("Problem uploading file");
         }
@@ -65,8 +66,8 @@ namespace HRManager.Api.Controllers
             return CreatedAtAction("GetPhotoById", new { id = insertedPhoto.PhotoID }, insertedPhoto);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePhoto(int id)
+        [HttpDelete("{id}/{employeeId}")]
+        public async Task<IActionResult> DeletePhoto(int id, int employeeId)
         {
             var photoToDelete = await _photoService.GetPhotoByIdAsync(id);
 
@@ -75,14 +76,14 @@ namespace HRManager.Api.Controllers
                 return NotFound();
             }
 
-            await _photoService.DeletePhotoAsync(id, photoToDelete.Uri, photoToDelete.Filename);
+            await _photoService.DeletePhotoAsync(id, photoToDelete.Uri, photoToDelete.Filename, employeeId);
             return Ok();
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePhoto(int id, IFormFile photo)
+        [HttpPut("{id}/{employeeId}")]
+        public async Task<IActionResult> UpdatePhoto(int id, IFormFile photo, int employeeId)
         {
-            await _photoService.UpdatePhotoAsync(id, photo);
+            await _photoService.UpdatePhotoAsync(id, photo, employeeId);
             return Ok();
         }
     }

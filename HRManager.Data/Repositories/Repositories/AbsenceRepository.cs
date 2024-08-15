@@ -17,7 +17,7 @@ namespace HRManager.Data.Repositories.Repositories
 
         public async Task<IEnumerable<Absence>> GetAbsencesAsync()
         {
-            return await context.Absences.Include(e=>e.Employee).ToListAsync();
+            return await context.Absences.Include(e=>e.Employee).ThenInclude(e=>e.Team).ToListAsync();
         }
 
         public async Task<Absence> GetAbsenceByIdAsync(int absenceId)

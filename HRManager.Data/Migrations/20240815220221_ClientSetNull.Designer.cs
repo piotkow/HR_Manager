@@ -4,6 +4,7 @@ using HRManager.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRManager.Data.Migrations
 {
     [DbContext(typeof(HRManagerDbContext))]
-    partial class HRManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240815220221_ClientSetNull")]
+    partial class ClientSetNull
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,8 +66,8 @@ namespace HRManager.Data.Migrations
                             AbsenceID = 1,
                             Description = "I need to take a 8 days off to complete Lego Star Wars",
                             EmployeeID = 1,
-                            EndDate = new DateTime(2024, 8, 13, 0, 5, 46, 216, DateTimeKind.Local).AddTicks(6713),
-                            StartDate = new DateTime(2024, 8, 11, 0, 5, 46, 216, DateTimeKind.Local).AddTicks(6708),
+                            EndDate = new DateTime(2024, 8, 13, 0, 2, 20, 690, DateTimeKind.Local).AddTicks(7503),
+                            StartDate = new DateTime(2024, 8, 11, 0, 2, 20, 690, DateTimeKind.Local).AddTicks(7497),
                             Status = 0
                         });
                 });
@@ -260,7 +263,7 @@ namespace HRManager.Data.Migrations
                             EmployeeID = 1,
                             City = "New York",
                             Country = "USA",
-                            DateOfEmployment = new DateTime(2022, 8, 16, 0, 5, 46, 216, DateTimeKind.Local).AddTicks(6633),
+                            DateOfEmployment = new DateTime(2022, 8, 16, 0, 2, 20, 690, DateTimeKind.Local).AddTicks(7426),
                             Email = "john.doe@example.com",
                             FirstName = "John",
                             LastName = "Doe",
@@ -275,7 +278,7 @@ namespace HRManager.Data.Migrations
                             EmployeeID = 2,
                             City = "Los Angeles",
                             Country = "USA",
-                            DateOfEmployment = new DateTime(2023, 8, 16, 0, 5, 46, 216, DateTimeKind.Local).AddTicks(6683),
+                            DateOfEmployment = new DateTime(2023, 8, 16, 0, 2, 20, 690, DateTimeKind.Local).AddTicks(7476),
                             Email = "alice.smith@example.com",
                             FirstName = "Alice",
                             LastName = "Smith",
@@ -290,7 +293,7 @@ namespace HRManager.Data.Migrations
                             EmployeeID = 3,
                             City = "Chicago",
                             Country = "USA",
-                            DateOfEmployment = new DateTime(2024, 8, 16, 0, 5, 46, 216, DateTimeKind.Local).AddTicks(6686),
+                            DateOfEmployment = new DateTime(2024, 8, 16, 0, 2, 20, 690, DateTimeKind.Local).AddTicks(7478),
                             Email = "bob.johnson@example.com",
                             FirstName = "Bob",
                             LastName = "Johnson",
@@ -518,8 +521,7 @@ namespace HRManager.Data.Migrations
 
                     b.HasOne("HRManager.Models.Entities.Team", "Team")
                         .WithMany("Employees")
-                        .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("TeamID");
 
                     b.Navigation("Position");
 

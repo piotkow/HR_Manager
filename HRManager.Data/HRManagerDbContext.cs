@@ -81,7 +81,7 @@ namespace HRManager.Data
                 .HasOne(e => e.Team)
                 .WithMany(t => t.Employees)
                 .HasForeignKey(e => e.TeamID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Employee ONE - ONE Photo
             modelBuilder.Entity<Employee>()
@@ -194,31 +194,6 @@ namespace HRManager.Data
                 }
             );
 
-            // Seed Photos
-            modelBuilder.Entity<Photo>().HasData(
-                new Photo
-                {
-                    PhotoID = 1,
-                    EmployeeID = 1,
-                    Filename = "JohnDoe.jpg",
-                    Uri = "https://hrmanagerblob.blob.core.windows.net/avatars/JohnDoe.jpg"
-                },
-                new Photo
-                {
-                    PhotoID = 2,
-                    EmployeeID = 2,
-                    Filename = "AliceSmith.jpg",
-                    Uri = "https://hrmanagerblob.blob.core.windows.net/avatars/AliceSmith.jpg"
-                },
-                new Photo
-                {
-                    PhotoID = 3,
-                    EmployeeID = 3,
-                    Filename = "BobJohnson.jpg",
-                    Uri = "https://hrmanagerblob.blob.core.windows.net/avatars/BobJohnson.jpg"
-                }
-            );
-
             // Seed Absences
             modelBuilder.Entity<Absence>().HasData(
                 new Absence
@@ -261,20 +236,6 @@ namespace HRManager.Data
                     AccountType = Role.Admin
                 }
             // Add more accounts as needed
-            );
-
-            // Seed Documents
-            modelBuilder.Entity<Document>().HasData(
-                new Document
-                {
-                    DocumentID = 1,
-                    EmployeeID = 1,
-                    IssueDate = DateTime.Now.AddYears(-2),
-                    Filename = "ImportantDocument.txt",
-                    Uri= "https://hrmanagerblob.blob.core.windows.net/documents/ImportantDocument.txt"
-                    //Content = Encoding.UTF8.GetBytes("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
-                }
-                // Add more documents as needed
             );
 
             // Seed Reports

@@ -46,8 +46,8 @@ namespace HRManager.Api.Controllers
             return documents;
         }
 
-        [HttpPost("upload-document")]
-        public async Task<ActionResult> UploadDocument(IFormFile document)
+        [HttpPost("upload-document/{employeeId}")]
+        public async Task<ActionResult> UploadDocument(IFormFile document, int employeeId)
         {
 
             //var user = await _employeeService.GetEmployeeByIdAsync(employeeId);
@@ -84,7 +84,7 @@ namespace HRManager.Api.Controllers
             //    await DeletePhoto(user.EmployeeID);
             //}
 
-            var result = await _documentService.UploadDocumentAsync(document);
+            var result = await _documentService.UploadDocumentAsync(document, employeeId);
 
             //var photoEntity = new PhotoResponse
             //{
@@ -105,11 +105,11 @@ namespace HRManager.Api.Controllers
             return CreatedAtAction("GetDocumentById", new { id = insertedDocument.DocumentID }, insertedDocument);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDocument(int id)
+        [HttpDelete("{id}/{employeeId}")]
+        public async Task<IActionResult> DeleteDocument(int id, int employeeId)
         {
             var documentToDelete = await _documentService.GetDocumentByIdAsync(id);
-            await _documentService.DeleteDocumentAsync(id, documentToDelete.Uri, documentToDelete.Filename);
+            await _documentService.DeleteDocumentAsync(id, documentToDelete.Uri, documentToDelete.Filename, employeeId);
             return Ok();
         }
 

@@ -5,6 +5,9 @@ using HRManager.Services.DTOs.DocumentDTO;
 using HRManager.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using HRManager.Models.Entities;
+using Azure;
+using System.Globalization;
+using Azure.Storage.Blobs.Models;
 
 namespace HRManager.Services.Services
 {
@@ -22,35 +25,63 @@ namespace HRManager.Services.Services
 
         }
 
-        public async Task<BlobClient> UploadDocumentAsync(IFormFile documentFile)
+        public async Task<BlobClient> UploadDocumentAsync(IFormFile documentFile, int employeeId)
         {
-            var containerInstance = _blobServiceClient.GetBlobContainerClient("documents");
+            var employee = await _unitOfWork.EmployeeRepository.GetEmployeeByIdAsync(employeeId);
+            string containerName = "container-" + employee.FirstName.ToLower() + "-" + employee.LastName.ToLower();
+            var containerInstance = _blobServiceClient.GetBlobContainerClient(containerName);
+
+            await containerInstance.CreateIfNotExistsAsync(PublicAccessType.BlobContainer);
+
             var blobInstance = containerInstance.GetBlobClient(documentFile.FileName);
 
-            await blobInstance.UploadAsync(documentFile.OpenReadStream());
+            try
+            {
+                await blobInstance.UploadAsync(documentFile.OpenReadStream());
+            }
+            catch (Azure.RequestFailedException ex) when (ex.ErrorCode == "BlobAlreadyExists")
+            {
+                string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss", CultureInfo.InvariantCulture);
+                string newFilename = $"{Path.GetFileNameWithoutExtension(documentFile.FileName)}({timestamp}){Path.GetExtension(documentFile.FileName)}";
+
+                blobInstance = containerInstance.GetBlobClient(newFilename);
+
+                await blobInstance.UploadAsync(documentFile.OpenReadStream());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex.Message);
+            }
+
             return blobInstance;
         }
 
-        public async Task<bool> DeleteDocumentAsync(int documentId, string blobUri, string Filename)
+
+        public async Task<bool> DeleteDocumentAsync(int documentId, string blobUri, string Filename, int employeeId)
         {
-
-            var containerInstance = _blobServiceClient.GetBlobContainerClient("documents");
-            var blobName = Filename;
-            var blobInstance = containerInstance.GetBlobClient(blobName);
-
-
-            var document = await _unitOfWork.DocumentRepository.GetDocumentByIdAsync(documentId);
-            bool ifExistInAzure = await blobInstance.ExistsAsync();
-
-            if (document != null && ifExistInAzure)
+            var employee = await _unitOfWork.EmployeeRepository.GetEmployeeByIdAsync(employeeId);
+            string containerName = "container-" + employee.FirstName.ToLower() + "-" + employee.LastName.ToLower();
+            var containerInstance = _blobServiceClient.GetBlobContainerClient(containerName);
+            if (containerInstance.Exists())
             {
-                await blobInstance.DeleteIfExistsAsync();
-                await _unitOfWork.DocumentRepository.DeleteDocumentAsync(document.DocumentID);
-                await _unitOfWork.SaveAsync();
-                return true;
+                var blobName = Filename;
+                var blobInstance = containerInstance.GetBlobClient(blobName);
+
+
+                var document = await _unitOfWork.DocumentRepository.GetDocumentByIdAsync(documentId);
+                bool ifExistInAzure = await blobInstance.ExistsAsync();
+
+                if (document != null && ifExistInAzure)
+                {
+                    await blobInstance.DeleteIfExistsAsync();
+                    await _unitOfWork.DocumentRepository.DeleteDocumentAsync(document.DocumentID);
+                    await _unitOfWork.SaveAsync();
+                    return true;
+                }
             }
             return false;
         }
+
 
         public async Task<IEnumerable<DocumentEmployeeResponse>> GetDocumentsAsync()
         {

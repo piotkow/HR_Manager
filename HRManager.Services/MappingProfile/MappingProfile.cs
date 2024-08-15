@@ -23,7 +23,9 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
-            .ForMember(dest => dest.RejectionReason, opt => opt.MapFrom(src => src.RejectionReason));
+            .ForMember(dest => dest.RejectionReason, opt => opt.MapFrom(src => src.RejectionReason))
+            .ForMember(dest => dest.TeamName, opt => opt.MapFrom(src => src.Employee.Team.TeamName))
+            .ForMember(dest => dest.TeamId, opt => opt.MapFrom(src => src.Employee.TeamID));
 
         CreateMap<Account, AccountEmployeeResponse>()
             .ForMember(dest => dest.AccountID, opt => opt.MapFrom(src => src.AccountID))

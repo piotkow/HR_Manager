@@ -12,6 +12,8 @@ namespace HRManager.Services.DTOs.AbsenceDTO
         public int AbsenceId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public int TeamId { get; set; }
+        public string TeamName { get; set; }
         public string Description {  get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

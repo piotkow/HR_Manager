@@ -18,8 +18,8 @@ namespace HRManager.Services.Interfaces
         Task<Document> InsertDocumentAsync(DocumentRequest documentReq);
         Task DeleteDocumentAsync(int documentId);
         Task UpdateDocumentAsync(int documentId, DocumentRequest documentReq);
-        Task<BlobClient> UploadDocumentAsync(IFormFile documentFile);
-        Task<bool> DeleteDocumentAsync(int documentId, string blobUri, string Filename);
+        Task<BlobClient> UploadDocumentAsync(IFormFile documentFile, int employeeId);
+        Task<bool> DeleteDocumentAsync(int documentId, string blobUri, string Filename, int employeeId);
     }
 
 
