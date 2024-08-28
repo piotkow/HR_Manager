@@ -3,13 +3,14 @@ using HRManager.Services.DTOs.DocumentDTO;
 using HRManager.Services.DTOs.PhotoDTO;
 using HRManager.Services.Interfaces;
 using HRManager.Services.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRManager.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]"), Authorize]
     public class DocumentController : ControllerBase
     {
         private readonly IDocumentService _documentService;
@@ -49,15 +50,6 @@ namespace HRManager.Api.Controllers
         [HttpPost("upload-document/{employeeId}")]
         public async Task<ActionResult> UploadDocument(IFormFile document, int employeeId)
         {
-
-            //var user = await _employeeService.GetEmployeeByIdAsync(employeeId);
-
-            //if (user == null)
-            //{
-            //    return NotFound();
-            //}
-
-
             if (document == null)
             {
                 return BadRequest("No file provided.");
@@ -70,7 +62,9 @@ namespace HRManager.Api.Controllers
                 "application/pdf", // PDF
                 "application/msword", // DOC
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
-                "text/plain" // TXT
+                "text/plain", // TXT
+                "application/vnd.ms-excel", // XLS
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" // XLSX
             };
 
             if (!allowedFileTypes.Contains(document.ContentType))
@@ -78,21 +72,8 @@ namespace HRManager.Api.Controllers
                 return BadRequest("Invalid file type. Only PDF, DOC, DOCX, TXT AND Image types(JPG,PNG) are allowed.");
             }
 
-
-            //if (user.Photo != null)
-            //{
-            //    await DeletePhoto(user.EmployeeID);
-            //}
-
             var result = await _documentService.UploadDocumentAsync(document, employeeId);
 
-            //var photoEntity = new PhotoResponse
-            //{
-            //    Filename = photo.FileName,
-            //    Uri = result.Uri.ToString()
-            //};
-
-            //user.Photo = photoEntity;
             if (result != null) return Ok(result);
             return BadRequest("Problem adding file");
         }

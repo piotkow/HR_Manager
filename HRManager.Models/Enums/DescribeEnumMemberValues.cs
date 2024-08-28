@@ -13,7 +13,6 @@ namespace HRManager.Models.Enums
             {
                 schema.Enum.Clear();
 
-                //Retrieve each of the values decorated with an EnumMember attribute
                 foreach (var member in context.Type.GetMembers())
                 {
                     var memberAttr = member.GetCustomAttributes(typeof(EnumMemberAttribute), false).FirstOrDefault();

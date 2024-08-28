@@ -1,13 +1,14 @@
 ﻿using HRManager.Models.Entities;
 using HRManager.Services.DTOs.AccountDTO;
 using HRManager.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRManager.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]"),Authorize]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;

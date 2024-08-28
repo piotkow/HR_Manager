@@ -1,6 +1,7 @@
 ﻿using HRManager.Models.Entities;
 using HRManager.Services.DTOs.AccountDTO;
 using HRManager.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NuGet.Protocol.Plugins;
@@ -10,7 +11,7 @@ using System.Text;
 
 namespace HRManager.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]"), Authorize]
     [ApiController]
     public class LoginController : ControllerBase
     {
@@ -37,12 +38,6 @@ namespace HRManager.Api.Controllers
                     new Claim(ClaimTypes.Name, authenticatedUser.Username),
                     new Claim("userID", authenticatedUser.AccountID.ToString()),
                     new Claim("accountType", authenticatedUser.AccountType.ToString()),
-                    //new Claim("email", authenticatedUser.Email),
-                    //new Claim("firstName", authenticatedUser.FirstName),
-                    //new Claim("lastName", authenticatedUser.LastName),
-                    //new Claim("dateOfEmployment", authenticatedUser.DateOfEmployment.ToString("yyyy-MM-dd")),
-                    //new Claim("Photo", authenticatedUser.Photo.Uri),
-                    //new Claim("phone", authenticatedUser.Phone),
                 };
 
                 var tokenOptions = new JwtSecurityToken(

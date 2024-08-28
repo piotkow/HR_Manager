@@ -116,7 +116,6 @@ namespace HRManager.Services.Services
             var document = await _unitOfWork.DocumentRepository.GetDocumentByIdAsync(documentId);
             document.EmployeeID = documentReq.EmployeeID;
             document.IssueDate = documentReq.IssueDate;
-            //document.Content = documentReq.Content;
             await _unitOfWork.DocumentRepository.UpdateDocumentAsync(document);
             await _unitOfWork.CommitAsync();
         }

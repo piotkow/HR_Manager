@@ -5,12 +5,13 @@ using HRManager.Models.Entities;
 using HRManager.Models.Enums;
 using HRManager.Services.DTOs.AbsenceDTO;
 using HRManager.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace YourApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]"), Authorize]
     public class AbsenceController : ControllerBase
     {
         private readonly IAbsenceService _absenceService;

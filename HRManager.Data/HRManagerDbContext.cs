@@ -28,8 +28,6 @@ namespace HRManager.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<Account>().HasKey(a => new { a.AccountID, a.EmployeeID });
-            //modelBuilder.Entity<Document>().Property(p => p.Content).HasColumnType("varbinary(max)");
 
             // Employee ONE - ONE Account
             modelBuilder.Entity<Employee>()
