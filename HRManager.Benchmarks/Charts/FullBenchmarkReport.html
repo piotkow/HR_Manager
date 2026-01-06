@@ -1,0 +1,989 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analiza wydajnosci Entity Framework Core - Wyniki benchmarkow</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background-color: #f0f2f5; 
+            color: #333;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .header h1 { margin: 0 0 10px 0; font-size: 2.5em; }
+        .header p { margin: 0; opacity: 0.9; font-size: 1.2em; }
+        
+        /* Navigation */
+        .nav {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav h3 { margin-top: 0; color: #667eea; }
+        .nav-group { margin-bottom: 15px; }
+        .nav-group-title { font-weight: bold; color: #555; margin-bottom: 8px; }
+        .nav a {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 3px;
+            background: #f0f2f5;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .nav a:hover { background: #667eea; color: white; }
+        
+        /* Scenario sections */
+        .scenario {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        .scenario-header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .scenario-header h2 { 
+            margin: 0; 
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .scenario-number {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+        }
+        .scenario-description {
+            color: #666;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        
+        /* Parameter tabs */
+        .param-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .param-tab {
+            padding: 10px 20px;
+            background: #e9ecef;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .param-tab:hover { background: #dee2e6; }
+        .param-tab.active { background: #667eea; color: white; }
+        
+        .param-content { display: none; }
+        .param-content.active { display: block; }
+        
+        /* Charts */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 900px) {
+            .charts-row { grid-template-columns: 1fr; }
+        }
+        .chart-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .chart-box h4 {
+            margin: 0 0 15px 0;
+            color: #555;
+            font-size: 1em;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover { background: #f8f9fa; }
+        .fastest { background: #d4edda !important; font-weight: bold; }
+        .slowest { background: #f8d7da !important; }
+        
+        /* Summary */
+        .summary-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin-top: 20px;
+        }
+        .summary-box h4 { margin-top: 0; color: #667eea; }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        /* Group badge */
+        .group-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            margin-left: 10px;
+        }
+        .group-a { background: #28a745; color: white; }
+        .group-b { background: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Analiza wydajnosci Entity Framework Core</h1>
+            <p>Wyniki badan benchmarkowych - 2026-01-05 18:37</p>
+        </div>
+        
+        <div class="nav">
+            <h3>Spis tresci</h3>
+            <div class="nav-group">
+                <div class="nav-group-title">Grupa A: Optymalizacja wewnetrzna EF Core</div>
+                <a href="#scenario-1">1. Tracking vs NoTracking</a>
+                <a href="#scenario-2">2. Strategie ladowania</a>
+                <a href="#scenario-3">3. Projekcja danych</a>
+                <a href="#scenario-4">4. Split Queries</a>
+                <a href="#scenario-5">5. Operacje masowe</a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-group-title">Grupa B: EF Core vs Dapper vs ADO.NET</div>
+                <a href="#scenario-6">6. Prosty odczyt</a>
+                <a href="#scenario-7">7. Raportowanie</a>
+                <a href="#scenario-8">8. Wysokowydajny zapis</a>
+            </div>
+        </div>        
+        <div class="scenario" id="scenario-1">
+            <div class="scenario-header">
+                <h2>
+                    <span class="scenario-number">1</span>
+                    Tracking vs NoTracking
+                    <span class='group-badge group-a'>Grupa A</span>
+                </h2>
+                <p class="scenario-description">Badanie narzutu wydajnosciowego ChangeTrackera przy operacjach tylko do odczytu.</p>
+            </div><div class='param-tabs'>
+<button class='param-tab active' onclick='showTab(this, "tab-0-10")'>RecordCount = 10</button>
+<button class='param-tab ' onclick='showTab(this, "tab-0-100")'>RecordCount = 100</button>
+<button class='param-tab ' onclick='showTab(this, "tab-0-1000")'>RecordCount = 1000</button>
+</div>
+            <div class="param-content active" id="tab-0-10">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart0-10"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart0-10"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>WithNoTracking</td><td>531.9 us</td><td>120.05 KB</td><td>1x</td></tr>
+<tr class=''><td>WithNoTrackingContext</td><td>532.9 us</td><td>122.13 KB</td><td>1x</td></tr>
+<tr class=''><td>WithNoTracking_WithInclude</td><td>644.3 us</td><td>142.96 KB</td><td>1.21x</td></tr>
+<tr class=''><td>WithTracking</td><td>669.3 us</td><td>131.14 KB</td><td>1.26x</td></tr>
+<tr class='slowest'><td>WithTracking_WithInclude</td><td>827.8 us</td><td>159.35 KB</td><td>1.56x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart0-10'), {
+                        type: 'bar',
+                        data: { labels: ["WithNoTracking", "WithNoTrackingContext", "WithNoTracking_WithInclude", "WithTracking", "WithTracking_WithInclude"], datasets: [{ data: [531.9, 532.9, 644.3, 669.3, 827.8], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart0-10'), {
+                        type: 'bar',
+                        data: { labels: ["WithNoTracking", "WithNoTrackingContext", "WithNoTracking_WithInclude", "WithTracking", "WithTracking_WithInclude"], datasets: [{ data: [120.05, 122.13, 142.96, 131.14, 159.35], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div>            <div class="param-content " id="tab-0-100">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart0-100"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart0-100"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>WithNoTrackingContext</td><td>522.6 us</td><td>122.95 KB</td><td>1x</td></tr>
+<tr class=''><td>WithNoTracking</td><td>532.6 us</td><td>120.88 KB</td><td>1.02x</td></tr>
+<tr class=''><td>WithTracking</td><td>591.3 us</td><td>132.88 KB</td><td>1.13x</td></tr>
+<tr class=''><td>WithNoTracking_WithInclude</td><td>658.5 us</td><td>145.06 KB</td><td>1.26x</td></tr>
+<tr class='slowest'><td>WithTracking_WithInclude</td><td>879.9 us</td><td>163.72 KB</td><td>1.68x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart0-100'), {
+                        type: 'bar',
+                        data: { labels: ["WithNoTrackingContext", "WithNoTracking", "WithTracking", "WithNoTracking_WithInclude", "WithTracking_WithInclude"], datasets: [{ data: [522.6, 532.6, 591.3, 658.5, 879.9], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart0-100'), {
+                        type: 'bar',
+                        data: { labels: ["WithNoTrackingContext", "WithNoTracking", "WithTracking", "WithNoTracking_WithInclude", "WithTracking_WithInclude"], datasets: [{ data: [122.95, 120.88, 132.88, 145.06, 163.72], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div>            <div class="param-content " id="tab-0-1000">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart0-1000"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart0-1000"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>WithNoTrackingContext</td><td>518.1 us</td><td>122.91 KB</td><td>1x</td></tr>
+<tr class=''><td>WithNoTracking</td><td>528.5 us</td><td>120.9 KB</td><td>1.02x</td></tr>
+<tr class=''><td>WithNoTracking_WithInclude</td><td>642.2 us</td><td>145.15 KB</td><td>1.24x</td></tr>
+<tr class=''><td>WithTracking</td><td>659.3 us</td><td>132.85 KB</td><td>1.27x</td></tr>
+<tr class='slowest'><td>WithTracking_WithInclude</td><td>841.3 us</td><td>163.72 KB</td><td>1.62x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart0-1000'), {
+                        type: 'bar',
+                        data: { labels: ["WithNoTrackingContext", "WithNoTracking", "WithNoTracking_WithInclude", "WithTracking", "WithTracking_WithInclude"], datasets: [{ data: [518.1, 528.5, 642.2, 659.3, 841.3], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart0-1000'), {
+                        type: 'bar',
+                        data: { labels: ["WithNoTrackingContext", "WithNoTracking", "WithNoTracking_WithInclude", "WithTracking", "WithTracking_WithInclude"], datasets: [{ data: [122.91, 120.9, 145.15, 132.85, 163.72], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div></div>
+        
+        <div class="scenario" id="scenario-2">
+            <div class="scenario-header">
+                <h2>
+                    <span class="scenario-number">2</span>
+                    Strategie ladowania danych
+                    <span class='group-badge group-a'>Grupa A</span>
+                </h2>
+                <p class="scenario-description">Porownanie Eager Loading (Include), Explicit Loading oraz Select Loading (projekcja do DTO).</p>
+            </div><div class='param-tabs'>
+<button class='param-tab active' onclick='showTab(this, "tab-1-10")'>RecordCount = 10</button>
+<button class='param-tab ' onclick='showTab(this, "tab-1-50")'>RecordCount = 50</button>
+<button class='param-tab ' onclick='showTab(this, "tab-1-100")'>RecordCount = 100</button>
+</div>
+            <div class="param-content active" id="tab-1-10">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart1-10"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart1-10"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>SelectLoading_Single</td><td>519.2 us</td><td>116.06 KB</td><td>1x</td></tr>
+<tr class=''><td>EagerLoading_Single</td><td>554.7 us</td><td>124.37 KB</td><td>1.07x</td></tr>
+<tr class=''><td>SelectLoading_List</td><td>590.3 us</td><td>125.25 KB</td><td>1.14x</td></tr>
+<tr class=''><td>EagerLoading_List</td><td>634.6 us</td><td>143.02 KB</td><td>1.22x</td></tr>
+<tr class=''><td>EagerLoading_Deep</td><td>767.6 us</td><td>173.16 KB</td><td>1.48x</td></tr>
+<tr class='slowest'><td>ExplicitLoading_Single</td><td>2490.7 us</td><td>220.71 KB</td><td>4.8x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart1-10'), {
+                        type: 'bar',
+                        data: { labels: ["SelectLoading_Single", "EagerLoading_Single", "SelectLoading_List", "EagerLoading_List", "EagerLoading_Deep", "ExplicitLoading_Single"], datasets: [{ data: [519.2, 554.7, 590.3, 634.6, 767.6, 2490.7], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart1-10'), {
+                        type: 'bar',
+                        data: { labels: ["SelectLoading_Single", "EagerLoading_Single", "SelectLoading_List", "EagerLoading_List", "EagerLoading_Deep", "ExplicitLoading_Single"], datasets: [{ data: [116.06, 124.37, 125.25, 143.02, 173.16, 220.71], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div>            <div class="param-content " id="tab-1-50">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart1-50"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart1-50"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>SelectLoading_Single</td><td>526.3 us</td><td>115.7 KB</td><td>1x</td></tr>
+<tr class=''><td>EagerLoading_Single</td><td>568.3 us</td><td>124.49 KB</td><td>1.08x</td></tr>
+<tr class=''><td>SelectLoading_List</td><td>613.1 us</td><td>125.83 KB</td><td>1.16x</td></tr>
+<tr class=''><td>EagerLoading_List</td><td>657.8 us</td><td>145.06 KB</td><td>1.25x</td></tr>
+<tr class=''><td>EagerLoading_Deep</td><td>853.3 us</td><td>176.67 KB</td><td>1.62x</td></tr>
+<tr class='slowest'><td>ExplicitLoading_Single</td><td>2363.2 us</td><td>220.98 KB</td><td>4.49x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart1-50'), {
+                        type: 'bar',
+                        data: { labels: ["SelectLoading_Single", "EagerLoading_Single", "SelectLoading_List", "EagerLoading_List", "EagerLoading_Deep", "ExplicitLoading_Single"], datasets: [{ data: [526.3, 568.3, 613.1, 657.8, 853.3, 2363.2], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart1-50'), {
+                        type: 'bar',
+                        data: { labels: ["SelectLoading_Single", "EagerLoading_Single", "SelectLoading_List", "EagerLoading_List", "EagerLoading_Deep", "ExplicitLoading_Single"], datasets: [{ data: [115.7, 124.49, 125.83, 145.06, 176.67, 220.98], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div>            <div class="param-content " id="tab-1-100">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart1-100"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart1-100"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>EagerLoading_Single</td><td>529.4 us</td><td>124.75 KB</td><td>1x</td></tr>
+<tr class=''><td>SelectLoading_Single</td><td>545.1 us</td><td>115.6 KB</td><td>1.03x</td></tr>
+<tr class=''><td>SelectLoading_List</td><td>590 us</td><td>125.87 KB</td><td>1.11x</td></tr>
+<tr class=''><td>EagerLoading_List</td><td>661.7 us</td><td>145.06 KB</td><td>1.25x</td></tr>
+<tr class=''><td>EagerLoading_Deep</td><td>802.7 us</td><td>176.78 KB</td><td>1.52x</td></tr>
+<tr class='slowest'><td>ExplicitLoading_Single</td><td>2552.2 us</td><td>221.13 KB</td><td>4.82x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart1-100'), {
+                        type: 'bar',
+                        data: { labels: ["EagerLoading_Single", "SelectLoading_Single", "SelectLoading_List", "EagerLoading_List", "EagerLoading_Deep", "ExplicitLoading_Single"], datasets: [{ data: [529.4, 545.1, 590, 661.7, 802.7, 2552.2], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart1-100'), {
+                        type: 'bar',
+                        data: { labels: ["EagerLoading_Single", "SelectLoading_Single", "SelectLoading_List", "EagerLoading_List", "EagerLoading_Deep", "ExplicitLoading_Single"], datasets: [{ data: [124.75, 115.6, 125.87, 145.06, 176.78, 221.13], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div></div>
+        
+        <div class="scenario" id="scenario-3">
+            <div class="scenario-header">
+                <h2>
+                    <span class="scenario-number">3</span>
+                    Projekcja danych
+                    <span class='group-badge group-a'>Grupa A</span>
+                </h2>
+                <p class="scenario-description">Porownanie pobierania pelnych encji vs projekcja do DTO.</p>
+            </div><div class='param-tabs'>
+<button class='param-tab active' onclick='showTab(this, "tab-2-10")'>RecordCount = 10</button>
+<button class='param-tab ' onclick='showTab(this, "tab-2-100")'>RecordCount = 100</button>
+<button class='param-tab ' onclick='showTab(this, "tab-2-500")'>RecordCount = 500</button>
+</div>
+            <div class="param-content active" id="tab-2-10">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart2-10"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart2-10"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>Projection_Basic</td><td>495.6 us</td><td>118.42 KB</td><td>1x</td></tr>
+<tr class=''><td>FullEntity</td><td>503.5 us</td><td>120.05 KB</td><td>1.02x</td></tr>
+<tr class=''><td>Projection_Minimal</td><td>504.9 us</td><td>115.88 KB</td><td>1.02x</td></tr>
+<tr class=''><td>Projection_Anonymous</td><td>533.2 us</td><td>121.86 KB</td><td>1.08x</td></tr>
+<tr class=''><td>Projection_WithAggregation</td><td>645.6 us</td><td>133.47 KB</td><td>1.3x</td></tr>
+<tr class=''><td>Projection_WithRelations</td><td>669.7 us</td><td>136.52 KB</td><td>1.35x</td></tr>
+<tr class=''><td>FullEntity_WithIncludes</td><td>680.4 us</td><td>150.63 KB</td><td>1.37x</td></tr>
+<tr class='slowest'><td>FullEntity_ManualAggregation</td><td>823.9 us</td><td>188.44 KB</td><td>1.66x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart2-10'), {
+                        type: 'bar',
+                        data: { labels: ["Projection_Basic", "FullEntity", "Projection_Minimal", "Projection_Anonymous", "Projection_WithAggregation", "Projection_WithRelations", "FullEntity_WithIncludes", "FullEntity_ManualAggregation"], datasets: [{ data: [495.6, 503.5, 504.9, 533.2, 645.6, 669.7, 680.4, 823.9], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart2-10'), {
+                        type: 'bar',
+                        data: { labels: ["Projection_Basic", "FullEntity", "Projection_Minimal", "Projection_Anonymous", "Projection_WithAggregation", "Projection_WithRelations", "FullEntity_WithIncludes", "FullEntity_ManualAggregation"], datasets: [{ data: [118.42, 120.05, 115.88, 121.86, 133.47, 136.52, 150.63, 188.44], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div>            <div class="param-content " id="tab-2-100">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart2-100"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart2-100"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>Projection_Basic</td><td>488.8 us</td><td>118.88 KB</td><td>1x</td></tr>
+<tr class=''><td>FullEntity</td><td>546.2 us</td><td>120.9 KB</td><td>1.12x</td></tr>
+<tr class=''><td>Projection_Minimal</td><td>546.9 us</td><td>115.74 KB</td><td>1.12x</td></tr>
+<tr class=''><td>Projection_Anonymous</td><td>568 us</td><td>122.59 KB</td><td>1.16x</td></tr>
+<tr class=''><td>Projection_WithAggregation</td><td>623.6 us</td><td>133.46 KB</td><td>1.28x</td></tr>
+<tr class=''><td>Projection_WithRelations</td><td>649.8 us</td><td>137.16 KB</td><td>1.33x</td></tr>
+<tr class=''><td>FullEntity_WithIncludes</td><td>673.4 us</td><td>153.31 KB</td><td>1.38x</td></tr>
+<tr class='slowest'><td>FullEntity_ManualAggregation</td><td>868.4 us</td><td>191.06 KB</td><td>1.78x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart2-100'), {
+                        type: 'bar',
+                        data: { labels: ["Projection_Basic", "FullEntity", "Projection_Minimal", "Projection_Anonymous", "Projection_WithAggregation", "Projection_WithRelations", "FullEntity_WithIncludes", "FullEntity_ManualAggregation"], datasets: [{ data: [488.8, 546.2, 546.9, 568, 623.6, 649.8, 673.4, 868.4], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart2-100'), {
+                        type: 'bar',
+                        data: { labels: ["Projection_Basic", "FullEntity", "Projection_Minimal", "Projection_Anonymous", "Projection_WithAggregation", "Projection_WithRelations", "FullEntity_WithIncludes", "FullEntity_ManualAggregation"], datasets: [{ data: [118.88, 120.9, 115.74, 122.59, 133.46, 137.16, 153.31, 191.06], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div>            <div class="param-content " id="tab-2-500">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart2-500"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart2-500"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>Projection_Basic</td><td>505.6 us</td><td>118.89 KB</td><td>1x</td></tr>
+<tr class=''><td>Projection_Minimal</td><td>511.9 us</td><td>115.71 KB</td><td>1.01x</td></tr>
+<tr class=''><td>FullEntity</td><td>521.4 us</td><td>120.9 KB</td><td>1.03x</td></tr>
+<tr class=''><td>Projection_Anonymous</td><td>572.4 us</td><td>122.89 KB</td><td>1.13x</td></tr>
+<tr class=''><td>Projection_WithAggregation</td><td>600.8 us</td><td>133.62 KB</td><td>1.19x</td></tr>
+<tr class=''><td>Projection_WithRelations</td><td>674.6 us</td><td>137.31 KB</td><td>1.33x</td></tr>
+<tr class=''><td>FullEntity_WithIncludes</td><td>692.4 us</td><td>153.21 KB</td><td>1.37x</td></tr>
+<tr class='slowest'><td>FullEntity_ManualAggregation</td><td>822.5 us</td><td>191.07 KB</td><td>1.63x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart2-500'), {
+                        type: 'bar',
+                        data: { labels: ["Projection_Basic", "Projection_Minimal", "FullEntity", "Projection_Anonymous", "Projection_WithAggregation", "Projection_WithRelations", "FullEntity_WithIncludes", "FullEntity_ManualAggregation"], datasets: [{ data: [505.6, 511.9, 521.4, 572.4, 600.8, 674.6, 692.4, 822.5], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart2-500'), {
+                        type: 'bar',
+                        data: { labels: ["Projection_Basic", "Projection_Minimal", "FullEntity", "Projection_Anonymous", "Projection_WithAggregation", "Projection_WithRelations", "FullEntity_WithIncludes", "FullEntity_ManualAggregation"], datasets: [{ data: [118.89, 115.71, 120.9, 122.89, 133.62, 137.31, 153.21, 191.07], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div></div>
+        
+        <div class="scenario" id="scenario-4">
+            <div class="scenario-header">
+                <h2>
+                    <span class="scenario-number">4</span>
+                    Split Queries
+                    <span class='group-badge group-a'>Grupa A</span>
+                </h2>
+                <p class="scenario-description">Porownanie Single Query vs Split Query - problem iloczynu kartezjanskiego.</p>
+            </div><div class='param-tabs'>
+<button class='param-tab active' onclick='showTab(this, "tab-3-5")'>RecordCount = 5</button>
+<button class='param-tab ' onclick='showTab(this, "tab-3-20")'>RecordCount = 20</button>
+<button class='param-tab ' onclick='showTab(this, "tab-3-50")'>RecordCount = 50</button>
+</div>
+            <div class="param-content active" id="tab-3-5">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart3-5"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart3-5"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>FilteredInclude_SingleQuery</td><td>624.7 us</td><td>134.6 KB</td><td>1x</td></tr>
+<tr class=''><td>Projection_Alternative</td><td>670.9 us</td><td>139.91 KB</td><td>1.07x</td></tr>
+<tr class=''><td>SingleQuery_MultipleIncludes</td><td>751.3 us</td><td>178.26 KB</td><td>1.2x</td></tr>
+<tr class=''><td>FilteredInclude_SplitQuery</td><td>761.8 us</td><td>149.49 KB</td><td>1.22x</td></tr>
+<tr class=''><td>SingleQuery_DeepNesting</td><td>846 us</td><td>201.33 KB</td><td>1.35x</td></tr>
+<tr class=''><td>SplitQuery_ContextLevel</td><td>1205.6 us</td><td>202.42 KB</td><td>1.93x</td></tr>
+<tr class=''><td>SplitQuery_MultipleIncludes</td><td>1336.1 us</td><td>203.15 KB</td><td>2.14x</td></tr>
+<tr class='slowest'><td>SplitQuery_DeepNesting</td><td>1666.5 us</td><td>240.21 KB</td><td>2.67x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart3-5'), {
+                        type: 'bar',
+                        data: { labels: ["FilteredInclude_SingleQuery", "Projection_Alternative", "SingleQuery_MultipleIncludes", "FilteredInclude_SplitQuery", "SingleQuery_DeepNesting", "SplitQuery_ContextLevel", "SplitQuery_MultipleIncludes", "SplitQuery_DeepNesting"], datasets: [{ data: [624.7, 670.9, 751.3, 761.8, 846, 1205.6, 1336.1, 1666.5], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart3-5'), {
+                        type: 'bar',
+                        data: { labels: ["FilteredInclude_SingleQuery", "Projection_Alternative", "SingleQuery_MultipleIncludes", "FilteredInclude_SplitQuery", "SingleQuery_DeepNesting", "SplitQuery_ContextLevel", "SplitQuery_MultipleIncludes", "SplitQuery_DeepNesting"], datasets: [{ data: [134.6, 139.91, 178.26, 149.49, 201.33, 202.42, 203.15, 240.21], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div>            <div class="param-content " id="tab-3-20">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart3-20"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart3-20"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>FilteredInclude_SingleQuery</td><td>648.5 us</td><td>143.76 KB</td><td>1x</td></tr>
+<tr class=''><td>Projection_Alternative</td><td>711.9 us</td><td>147.03 KB</td><td>1.1x</td></tr>
+<tr class=''><td>SingleQuery_MultipleIncludes</td><td>800.1 us</td><td>203.85 KB</td><td>1.23x</td></tr>
+<tr class=''><td>FilteredInclude_SplitQuery</td><td>838.1 us</td><td>160.76 KB</td><td>1.29x</td></tr>
+<tr class=''><td>SingleQuery_DeepNesting</td><td>956.8 us</td><td>237.1 KB</td><td>1.48x</td></tr>
+<tr class=''><td>SplitQuery_MultipleIncludes</td><td>1376.2 us</td><td>229.1 KB</td><td>2.12x</td></tr>
+<tr class=''><td>SplitQuery_ContextLevel</td><td>1399.2 us</td><td>228.91 KB</td><td>2.16x</td></tr>
+<tr class='slowest'><td>SplitQuery_DeepNesting</td><td>1705.8 us</td><td>274.63 KB</td><td>2.63x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart3-20'), {
+                        type: 'bar',
+                        data: { labels: ["FilteredInclude_SingleQuery", "Projection_Alternative", "SingleQuery_MultipleIncludes", "FilteredInclude_SplitQuery", "SingleQuery_DeepNesting", "SplitQuery_MultipleIncludes", "SplitQuery_ContextLevel", "SplitQuery_DeepNesting"], datasets: [{ data: [648.5, 711.9, 800.1, 838.1, 956.8, 1376.2, 1399.2, 1705.8], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart3-20'), {
+                        type: 'bar',
+                        data: { labels: ["FilteredInclude_SingleQuery", "Projection_Alternative", "SingleQuery_MultipleIncludes", "FilteredInclude_SplitQuery", "SingleQuery_DeepNesting", "SplitQuery_MultipleIncludes", "SplitQuery_ContextLevel", "SplitQuery_DeepNesting"], datasets: [{ data: [143.76, 147.03, 203.85, 160.76, 237.1, 229.1, 228.91, 274.63], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div>            <div class="param-content " id="tab-3-50">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart3-50"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart3-50"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>FilteredInclude_SingleQuery</td><td>652.6 us</td><td>143.76 KB</td><td>1x</td></tr>
+<tr class=''><td>Projection_Alternative</td><td>733.3 us</td><td>147.01 KB</td><td>1.12x</td></tr>
+<tr class=''><td>FilteredInclude_SplitQuery</td><td>829.1 us</td><td>160.74 KB</td><td>1.27x</td></tr>
+<tr class=''><td>SingleQuery_MultipleIncludes</td><td>836.2 us</td><td>203.85 KB</td><td>1.28x</td></tr>
+<tr class=''><td>SingleQuery_DeepNesting</td><td>941 us</td><td>236.99 KB</td><td>1.44x</td></tr>
+<tr class=''><td>SplitQuery_ContextLevel</td><td>1320.5 us</td><td>228.96 KB</td><td>2.02x</td></tr>
+<tr class=''><td>SplitQuery_MultipleIncludes</td><td>1333.4 us</td><td>228.94 KB</td><td>2.04x</td></tr>
+<tr class='slowest'><td>SplitQuery_DeepNesting</td><td>1743.5 us</td><td>274.7 KB</td><td>2.67x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart3-50'), {
+                        type: 'bar',
+                        data: { labels: ["FilteredInclude_SingleQuery", "Projection_Alternative", "FilteredInclude_SplitQuery", "SingleQuery_MultipleIncludes", "SingleQuery_DeepNesting", "SplitQuery_ContextLevel", "SplitQuery_MultipleIncludes", "SplitQuery_DeepNesting"], datasets: [{ data: [652.6, 733.3, 829.1, 836.2, 941, 1320.5, 1333.4, 1743.5], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart3-50'), {
+                        type: 'bar',
+                        data: { labels: ["FilteredInclude_SingleQuery", "Projection_Alternative", "FilteredInclude_SplitQuery", "SingleQuery_MultipleIncludes", "SingleQuery_DeepNesting", "SplitQuery_ContextLevel", "SplitQuery_MultipleIncludes", "SplitQuery_DeepNesting"], datasets: [{ data: [143.76, 147.01, 160.74, 203.85, 236.99, 228.96, 228.94, 274.7], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div></div>
+        
+        <div class="scenario" id="scenario-5">
+            <div class="scenario-header">
+                <h2>
+                    <span class="scenario-number">5</span>
+                    Operacje masowe
+                    <span class='group-badge group-a'>Grupa A</span>
+                </h2>
+                <p class="scenario-description">Porownanie AddRange, ExecuteUpdate/Delete oraz BulkExtensions.</p>
+            </div><div class='param-tabs'>
+<button class='param-tab active' onclick='showTab(this, "tab-4-10")'>RecordCount = 10</button>
+<button class='param-tab ' onclick='showTab(this, "tab-4-100")'>RecordCount = 100</button>
+<button class='param-tab ' onclick='showTab(this, "tab-4-500")'>RecordCount = 500</button>
+</div>
+            <div class="param-content active" id="tab-4-10">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart4-10"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart4-10"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>Update_UpdateRange</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Update_ExecuteUpdate</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Delete_ExecuteDelete</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Update_Loop_SaveEach</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Insert_Loop_SaveEach</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Insert_Loop_SaveOnce</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Insert_AddRange</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class=''><td>Insert_BulkExtensions</td><td>2306 us</td><td>184.71 KB</td><td>1x</td></tr>
+<tr class=''><td>Delete_BulkExtensions</td><td>7068 us</td><td>271.22 KB</td><td>1x</td></tr>
+<tr class='slowest'><td>Update_BulkExtensions</td><td>14664 us</td><td>319.49 KB</td><td>1x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart4-10'), {
+                        type: 'bar',
+                        data: { labels: ["Update_UpdateRange", "Update_ExecuteUpdate", "Delete_ExecuteDelete", "Update_Loop_SaveEach", "Insert_Loop_SaveEach", "Insert_Loop_SaveOnce", "Insert_AddRange", "Insert_BulkExtensions", "Delete_BulkExtensions", "Update_BulkExtensions"], datasets: [{ data: [0, 0, 0, 0, 0, 0, 0, 2306, 7068, 14664], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart4-10'), {
+                        type: 'bar',
+                        data: { labels: ["Update_UpdateRange", "Update_ExecuteUpdate", "Delete_ExecuteDelete", "Update_Loop_SaveEach", "Insert_Loop_SaveEach", "Insert_Loop_SaveOnce", "Insert_AddRange", "Insert_BulkExtensions", "Delete_BulkExtensions", "Update_BulkExtensions"], datasets: [{ data: [0, 0, 0, 0, 0, 0, 0, 184.71, 271.22, 319.49], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div>            <div class="param-content " id="tab-4-100">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart4-100"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart4-100"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>Update_UpdateRange</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Update_ExecuteUpdate</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Delete_ExecuteDelete</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Update_Loop_SaveEach</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Insert_Loop_SaveEach</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Insert_Loop_SaveOnce</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Insert_AddRange</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class=''><td>Insert_BulkExtensions</td><td>3567 us</td><td>247.33 KB</td><td>1x</td></tr>
+<tr class=''><td>Delete_BulkExtensions</td><td>9181 us</td><td>382.22 KB</td><td>1x</td></tr>
+<tr class='slowest'><td>Update_BulkExtensions</td><td>18936 us</td><td>478.79 KB</td><td>1x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart4-100'), {
+                        type: 'bar',
+                        data: { labels: ["Update_UpdateRange", "Update_ExecuteUpdate", "Delete_ExecuteDelete", "Update_Loop_SaveEach", "Insert_Loop_SaveEach", "Insert_Loop_SaveOnce", "Insert_AddRange", "Insert_BulkExtensions", "Delete_BulkExtensions", "Update_BulkExtensions"], datasets: [{ data: [0, 0, 0, 0, 0, 0, 0, 3567, 9181, 18936], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart4-100'), {
+                        type: 'bar',
+                        data: { labels: ["Update_UpdateRange", "Update_ExecuteUpdate", "Delete_ExecuteDelete", "Update_Loop_SaveEach", "Insert_Loop_SaveEach", "Insert_Loop_SaveOnce", "Insert_AddRange", "Insert_BulkExtensions", "Delete_BulkExtensions", "Update_BulkExtensions"], datasets: [{ data: [0, 0, 0, 0, 0, 0, 0, 247.33, 382.22, 478.79], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div>            <div class="param-content " id="tab-4-500">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart4-500"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart4-500"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>Update_UpdateRange</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Update_ExecuteUpdate</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Delete_ExecuteDelete</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Update_Loop_SaveEach</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Insert_Loop_SaveEach</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Insert_Loop_SaveOnce</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>Insert_AddRange</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class=''><td>Insert_BulkExtensions</td><td>5648 us</td><td>573 KB</td><td>1x</td></tr>
+<tr class=''><td>Delete_BulkExtensions</td><td>13607 us</td><td>929.89 KB</td><td>1x</td></tr>
+<tr class='slowest'><td>Update_BulkExtensions</td><td>31907 us</td><td>1274.7 KB</td><td>1x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart4-500'), {
+                        type: 'bar',
+                        data: { labels: ["Update_UpdateRange", "Update_ExecuteUpdate", "Delete_ExecuteDelete", "Update_Loop_SaveEach", "Insert_Loop_SaveEach", "Insert_Loop_SaveOnce", "Insert_AddRange", "Insert_BulkExtensions", "Delete_BulkExtensions", "Update_BulkExtensions"], datasets: [{ data: [0, 0, 0, 0, 0, 0, 0, 5648, 13607, 31907], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart4-500'), {
+                        type: 'bar',
+                        data: { labels: ["Update_UpdateRange", "Update_ExecuteUpdate", "Delete_ExecuteDelete", "Update_Loop_SaveEach", "Insert_Loop_SaveEach", "Insert_Loop_SaveOnce", "Insert_AddRange", "Insert_BulkExtensions", "Delete_BulkExtensions", "Update_BulkExtensions"], datasets: [{ data: [0, 0, 0, 0, 0, 0, 0, 573, 929.89, 1274.7], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div></div>
+        
+        <div class="scenario" id="scenario-6">
+            <div class="scenario-header">
+                <h2>
+                    <span class="scenario-number">6</span>
+                    Prosty odczyt (GetById)
+                    <span class='group-badge group-b'>Grupa B</span>
+                </h2>
+                <p class="scenario-description">Porownanie EF Core vs Dapper vs ADO.NET dla prostego zapytania.</p>
+            </div>            <div class="charts-row">
+                <div class="chart-box">
+                    <h4>Czas wykonania (us)</h4>
+                    <canvas id="timeChart5"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h4>Alokacja pamieci (KB)</h4>
+                    <canvas id="memChart5"></canvas>
+                </div>
+            </div>
+            <table>
+                <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>Dapper_QueryDto</td><td>154.6 us</td><td>7.23 KB</td><td>1x</td></tr>
+<tr class=''><td>AdoNet_DataReaderDto</td><td>156.2 us</td><td>6.53 KB</td><td>1.01x</td></tr>
+<tr class=''><td>Dapper_Query</td><td>167.8 us</td><td>9.8 KB</td><td>1.09x</td></tr>
+<tr class=''><td>AdoNet_DataReader</td><td>170.7 us</td><td>9.8 KB</td><td>1.1x</td></tr>
+<tr class=''><td>Dapper_QuerySingle</td><td>172.8 us</td><td>9.91 KB</td><td>1.12x</td></tr>
+<tr class=''><td>EFCore_SingleOrDefault_NoTracking</td><td>439.4 us</td><td>109.31 KB</td><td>2.84x</td></tr>
+<tr class=''><td>EFCore_FirstOrDefault_NoTracking</td><td>450.1 us</td><td>109.15 KB</td><td>2.91x</td></tr>
+<tr class=''><td>EFCore_Projection</td><td>473.2 us</td><td>110.78 KB</td><td>3.06x</td></tr>
+<tr class=''><td>EFCore_RawSql</td><td>502 us</td><td>123.02 KB</td><td>3.25x</td></tr>
+<tr class='slowest'><td>EFCore_Find</td><td>518.2 us</td><td>113.59 KB</td><td>3.35x</td></tr>
+            </table>
+            <script>
+                new Chart(document.getElementById('timeChart5'), {
+                    type: 'bar',
+                    data: { labels: ["Dapper_QueryDto", "AdoNet_DataReaderDto", "Dapper_Query", "AdoNet_DataReader", "Dapper_QuerySingle", "EFCore_SingleOrDefault_NoTracking", "EFCore_FirstOrDefault_NoTracking", "EFCore_Projection", "EFCore_RawSql", "EFCore_Find"], datasets: [{ data: [154.6, 156.2, 167.8, 170.7, 172.8, 439.4, 450.1, 473.2, 502, 518.2], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                    options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                });
+                new Chart(document.getElementById('memChart5'), {
+                    type: 'bar',
+                    data: { labels: ["Dapper_QueryDto", "AdoNet_DataReaderDto", "Dapper_Query", "AdoNet_DataReader", "Dapper_QuerySingle", "EFCore_SingleOrDefault_NoTracking", "EFCore_FirstOrDefault_NoTracking", "EFCore_Projection", "EFCore_RawSql", "EFCore_Find"], datasets: [{ data: [7.23, 6.53, 9.8, 9.8, 9.91, 109.31, 109.15, 110.78, 123.02, 113.59], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                    options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                });
+            </script></div>
+        
+        <div class="scenario" id="scenario-7">
+            <div class="scenario-header">
+                <h2>
+                    <span class="scenario-number">7</span>
+                    Raportowanie (Complex Query)
+                    <span class='group-badge group-b'>Grupa B</span>
+                </h2>
+                <p class="scenario-description">Skomplikowane zapytanie agregujace z wieloma zlaczeniami.</p>
+            </div>            <div class="charts-row">
+                <div class="chart-box">
+                    <h4>Czas wykonania (us)</h4>
+                    <canvas id="timeChart6"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h4>Alokacja pamieci (KB)</h4>
+                    <canvas id="memChart6"></canvas>
+                </div>
+            </div>
+            <table>
+                <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>AdoNet_ComplexQuery</td><td>285.9 us</td><td>9.83 KB</td><td>1x</td></tr>
+<tr class=''><td>Dapper_ComplexQuery</td><td>330.3 us</td><td>10.39 KB</td><td>1.16x</td></tr>
+<tr class=''><td>Dapper_GroupByQuery</td><td>524.9 us</td><td>9.35 KB</td><td>1.84x</td></tr>
+<tr class=''><td>EFCore_GroupByQuery</td><td>676 us</td><td>112.15 KB</td><td>2.36x</td></tr>
+<tr class=''><td>EFCore_RawSql</td><td>740.2 us</td><td>130.62 KB</td><td>2.59x</td></tr>
+<tr class='slowest'><td>EFCore_ComplexQuery</td><td>8501 us</td><td>132.03 KB</td><td>29.73x</td></tr>
+            </table>
+            <script>
+                new Chart(document.getElementById('timeChart6'), {
+                    type: 'bar',
+                    data: { labels: ["AdoNet_ComplexQuery", "Dapper_ComplexQuery", "Dapper_GroupByQuery", "EFCore_GroupByQuery", "EFCore_RawSql", "EFCore_ComplexQuery"], datasets: [{ data: [285.9, 330.3, 524.9, 676, 740.2, 8501], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                    options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                });
+                new Chart(document.getElementById('memChart6'), {
+                    type: 'bar',
+                    data: { labels: ["AdoNet_ComplexQuery", "Dapper_ComplexQuery", "Dapper_GroupByQuery", "EFCore_GroupByQuery", "EFCore_RawSql", "EFCore_ComplexQuery"], datasets: [{ data: [9.83, 10.39, 9.35, 112.15, 130.62, 132.03], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                    options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                });
+            </script></div>
+        
+        <div class="scenario" id="scenario-8">
+            <div class="scenario-header">
+                <h2>
+                    <span class="scenario-number">8</span>
+                    Wysokowydajny zapis
+                    <span class='group-badge group-b'>Grupa B</span>
+                </h2>
+                <p class="scenario-description">Masowe wstawianie danych - EF Core vs Dapper vs ADO.NET vs SqlBulkCopy.</p>
+            </div><div class='param-tabs'>
+<button class='param-tab active' onclick='showTab(this, "tab-7-100")'>RecordCount = 100</button>
+<button class='param-tab ' onclick='showTab(this, "tab-7-500")'>RecordCount = 500</button>
+<button class='param-tab ' onclick='showTab(this, "tab-7-1000")'>RecordCount = 1000</button>
+</div>
+            <div class="param-content active" id="tab-7-100">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart7-100"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart7-100"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>EFCore_AddRange_NoAutoDetect</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>EFCore_AddRange</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class=''><td>AdoNet_SqlBulkCopy_Optimized</td><td>2427 us</td><td>82.2 KB</td><td>1x</td></tr>
+<tr class=''><td>AdoNet_SqlBulkCopy</td><td>2732 us</td><td>82.58 KB</td><td>1x</td></tr>
+<tr class=''><td>EFCore_BulkInsert_Configured</td><td>3589 us</td><td>247.32 KB</td><td>1x</td></tr>
+<tr class=''><td>EFCore_BulkInsert</td><td>3683 us</td><td>247.33 KB</td><td>1x</td></tr>
+<tr class=''><td>EFCore_BulkInsert_WithTransaction</td><td>3930 us</td><td>248.11 KB</td><td>1x</td></tr>
+<tr class=''><td>AdoNet_Command_Loop</td><td>16635 us</td><td>442.75 KB</td><td>1x</td></tr>
+<tr class=''><td>Dapper_Execute_Loop</td><td>16896 us</td><td>475.56 KB</td><td>1x</td></tr>
+<tr class='slowest'><td>Dapper_Execute_Batch</td><td>17507 us</td><td>334.9 KB</td><td>1x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart7-100'), {
+                        type: 'bar',
+                        data: { labels: ["EFCore_AddRange_NoAutoDetect", "EFCore_AddRange", "AdoNet_SqlBulkCopy_Optimized", "AdoNet_SqlBulkCopy", "EFCore_BulkInsert_Configured", "EFCore_BulkInsert", "EFCore_BulkInsert_WithTransaction", "AdoNet_Command_Loop", "Dapper_Execute_Loop", "Dapper_Execute_Batch"], datasets: [{ data: [0, 0, 2427, 2732, 3589, 3683, 3930, 16635, 16896, 17507], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart7-100'), {
+                        type: 'bar',
+                        data: { labels: ["EFCore_AddRange_NoAutoDetect", "EFCore_AddRange", "AdoNet_SqlBulkCopy_Optimized", "AdoNet_SqlBulkCopy", "EFCore_BulkInsert_Configured", "EFCore_BulkInsert", "EFCore_BulkInsert_WithTransaction", "AdoNet_Command_Loop", "Dapper_Execute_Loop", "Dapper_Execute_Batch"], datasets: [{ data: [0, 0, 82.2, 82.58, 247.32, 247.33, 248.11, 442.75, 475.56, 334.9], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div>            <div class="param-content " id="tab-7-500">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart7-500"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart7-500"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>EFCore_AddRange_NoAutoDetect</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>EFCore_AddRange</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class=''><td>AdoNet_SqlBulkCopy_Optimized</td><td>4495 us</td><td>349.52 KB</td><td>1x</td></tr>
+<tr class=''><td>AdoNet_SqlBulkCopy</td><td>4902 us</td><td>349.47 KB</td><td>1x</td></tr>
+<tr class=''><td>EFCore_BulkInsert</td><td>5470 us</td><td>571.82 KB</td><td>1x</td></tr>
+<tr class=''><td>EFCore_BulkInsert_Configured</td><td>6057 us</td><td>571.55 KB</td><td>1x</td></tr>
+<tr class=''><td>EFCore_BulkInsert_WithTransaction</td><td>6097 us</td><td>572.33 KB</td><td>1x</td></tr>
+<tr class=''><td>AdoNet_Command_Loop</td><td>90720 us</td><td>2205.28 KB</td><td>1x</td></tr>
+<tr class=''><td>Dapper_Execute_Loop</td><td>90737 us</td><td>2369.33 KB</td><td>1x</td></tr>
+<tr class='slowest'><td>Dapper_Execute_Batch</td><td>91504 us</td><td>1659.91 KB</td><td>1x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart7-500'), {
+                        type: 'bar',
+                        data: { labels: ["EFCore_AddRange_NoAutoDetect", "EFCore_AddRange", "AdoNet_SqlBulkCopy_Optimized", "AdoNet_SqlBulkCopy", "EFCore_BulkInsert", "EFCore_BulkInsert_Configured", "EFCore_BulkInsert_WithTransaction", "AdoNet_Command_Loop", "Dapper_Execute_Loop", "Dapper_Execute_Batch"], datasets: [{ data: [0, 0, 4495, 4902, 5470, 6057, 6097, 90720, 90737, 91504], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart7-500'), {
+                        type: 'bar',
+                        data: { labels: ["EFCore_AddRange_NoAutoDetect", "EFCore_AddRange", "AdoNet_SqlBulkCopy_Optimized", "AdoNet_SqlBulkCopy", "EFCore_BulkInsert", "EFCore_BulkInsert_Configured", "EFCore_BulkInsert_WithTransaction", "AdoNet_Command_Loop", "Dapper_Execute_Loop", "Dapper_Execute_Batch"], datasets: [{ data: [0, 0, 349.52, 349.47, 571.82, 571.55, 572.33, 2205.28, 2369.33, 1659.91], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div>            <div class="param-content " id="tab-7-1000">
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4>Czas wykonania (us)</h4>
+                        <canvas id="timeChart7-1000"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4>Alokacja pamieci (KB)</h4>
+                        <canvas id="memChart7-1000"></canvas>
+                    </div>
+                </div>
+                <table>
+                    <tr><th>Metoda</th><th>Sredni czas</th><th>Pamiec</th><th>Wzglednie</th></tr><tr class='fastest'><td>EFCore_AddRange_NoAutoDetect</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class='fastest'><td>EFCore_AddRange</td><td>0 us</td><td>0 KB</td><td>1x</td></tr>
+<tr class=''><td>AdoNet_SqlBulkCopy_Optimized</td><td>6886 us</td><td>694.98 KB</td><td>1x</td></tr>
+<tr class=''><td>EFCore_BulkInsert</td><td>8159 us</td><td>988.28 KB</td><td>1x</td></tr>
+<tr class=''><td>EFCore_BulkInsert_WithTransaction</td><td>8284 us</td><td>989.08 KB</td><td>1x</td></tr>
+<tr class=''><td>AdoNet_SqlBulkCopy</td><td>9671 us</td><td>679.93 KB</td><td>1x</td></tr>
+<tr class=''><td>EFCore_BulkInsert_Configured</td><td>10708 us</td><td>973.65 KB</td><td>1x</td></tr>
+<tr class=''><td>Dapper_Execute_Batch</td><td>180505 us</td><td>3316.18 KB</td><td>1x</td></tr>
+<tr class=''><td>AdoNet_Command_Loop</td><td>181399 us</td><td>4408.43 KB</td><td>1x</td></tr>
+<tr class='slowest'><td>Dapper_Execute_Loop</td><td>184797 us</td><td>4736.53 KB</td><td>1x</td></tr>
+                </table>
+                <script>
+                    new Chart(document.getElementById('timeChart7-1000'), {
+                        type: 'bar',
+                        data: { labels: ["EFCore_AddRange_NoAutoDetect", "EFCore_AddRange", "AdoNet_SqlBulkCopy_Optimized", "EFCore_BulkInsert", "EFCore_BulkInsert_WithTransaction", "AdoNet_SqlBulkCopy", "EFCore_BulkInsert_Configured", "Dapper_Execute_Batch", "AdoNet_Command_Loop", "Dapper_Execute_Loop"], datasets: [{ data: [0, 0, 6886, 8159, 8284, 9671, 10708, 180505, 181399, 184797], backgroundColor: 'rgba(102, 126, 234, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                    new Chart(document.getElementById('memChart7-1000'), {
+                        type: 'bar',
+                        data: { labels: ["EFCore_AddRange_NoAutoDetect", "EFCore_AddRange", "AdoNet_SqlBulkCopy_Optimized", "EFCore_BulkInsert", "EFCore_BulkInsert_WithTransaction", "AdoNet_SqlBulkCopy", "EFCore_BulkInsert_Configured", "Dapper_Execute_Batch", "AdoNet_Command_Loop", "Dapper_Execute_Loop"], datasets: [{ data: [0, 0, 694.98, 988.28, 989.08, 679.93, 973.65, 3316.18, 4408.43, 4736.53], backgroundColor: 'rgba(118, 75, 162, 0.8)' }] },
+                        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
+                </script>
+            </div></div>
+        
+        <div class="footer">
+            <p>Wygenerowano automatycznie przez BenchmarkDotNet + PowerShell</p>
+            <p>Srodowisko: .NET 8.0 | Windows 11 | 2026-01-05 18:37:40</p>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(btn, tabId) {
+            // Find parent scenario
+            var scenario = btn.closest('.scenario');
+            
+            // Deactivate all tabs and content in this scenario
+            scenario.querySelectorAll('.param-tab').forEach(t => t.classList.remove('active'));
+            scenario.querySelectorAll('.param-content').forEach(c => c.classList.remove('active'));
+            
+            // Activate clicked tab and its content
+            btn.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+    </script>
+</body>
+</html>

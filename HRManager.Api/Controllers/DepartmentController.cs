@@ -1,13 +1,12 @@
 ﻿using HRManager.Models.Entities;
 using HRManager.Services.DTOs.DepartmentDTO;
 using HRManager.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRManager.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]"), Authorize]
+    [Route("api/[controller]")]
     public class DepartmentController : ControllerBase
     {
         private readonly IDepartmentService _departmentService;

@@ -1,14 +1,13 @@
 ﻿using HRManager.Models.Entities;
 using HRManager.Services.DTOs.ReportDTO;
 using HRManager.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRManager.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]"), Authorize]
+    [Route("api/[controller]")]
     public class ReportController : ControllerBase
     {
         private readonly IReportService _reportService;

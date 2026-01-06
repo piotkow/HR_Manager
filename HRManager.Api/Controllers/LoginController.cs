@@ -11,7 +11,7 @@ using System.Text;
 
 namespace HRManager.Api.Controllers
 {
-    [Route("api/[controller]"), Authorize]
+    [Route("api/[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
     {

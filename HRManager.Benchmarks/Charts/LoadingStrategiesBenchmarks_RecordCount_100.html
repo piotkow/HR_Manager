@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoadingStrategiesBenchmarks - Benchmark Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 { text-align: center; color: #333; margin-bottom: 10px; }
+        .chart-container { background: white; border-radius: 10px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .chart-row { display: flex; gap: 20px; flex-wrap: wrap; }
+        .chart-half { flex: 1; min-width: 400px; }
+        h2 { color: #555; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        .stats { margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px; }
+        .stats h3 { margin-top: 0; color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #007bff; color: white; }
+        tr:hover { background-color: #f1f1f1; }
+        .fastest { background-color: #d4edda !important; font-weight: bold; }
+        .slowest { background-color: #f8d7da !important; }
+        .info-box { background: #e7f3ff; border-left: 4px solid #007bff; padding: 15px; margin-bottom: 20px; border-radius: 0 5px 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LoadingStrategiesBenchmarks</h1>
+        <p style='text-align:center;color:#666;margin-top:-20px;'>RecordCount = 100</p>
+        
+        <div class="info-box">
+            <strong>Wygenerowano:</strong> 2026-01-05 15:42:13<br>
+            <strong>Liczba metod:</strong> 6
+        </div>
+        
+        <div class="chart-row">
+            <div class="chart-container chart-half">
+                <h2>Czas wykonania (us)</h2>
+                <canvas id="timeChart"></canvas>
+            </div>
+            <div class="chart-container chart-half">
+                <h2>Alokacja pamieci (KB)</h2>
+                <canvas id="memoryChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h2>Porownanie wzgledne</h2>
+            <canvas id="comparisonChart"></canvas>
+        </div>
+        
+        <div class="chart-container stats">
+            <h3>Szczegolowe wyniki</h3>
+            <table>
+                <tr><th>Metoda</th><th>Sredni czas (us)</th><th>Pamiec (KB)</th><th>Wzgledem najszybszej</th></tr><tr class="fastest"><td>EagerLoading_Single</td><td>529.4 us</td><td>124.75 KB</td><td>1x</td></tr>
+<tr class=""><td>SelectLoading_Single</td><td>545.1 us</td><td>115.6 KB</td><td>1.03x</td></tr>
+<tr class=""><td>SelectLoading_List</td><td>590 us</td><td>125.87 KB</td><td>1.11x</td></tr>
+<tr class=""><td>EagerLoading_List</td><td>661.7 us</td><td>145.06 KB</td><td>1.25x</td></tr>
+<tr class=""><td>EagerLoading_Deep</td><td>802.7 us</td><td>176.78 KB</td><td>1.52x</td></tr>
+<tr class="slowest"><td>ExplicitLoading_Single</td><td>2552.2 us</td><td>221.13 KB</td><td>4.82x</td></tr>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        new Chart(document.getElementById('timeChart'), {
+            type: 'bar',
+            data: { labels: ["EagerLoading_Single", "SelectLoading_Single", "SelectLoading_List", "EagerLoading_List", "EagerLoading_Deep", "ExplicitLoading_Single"], datasets: [{ label: 'Czas (us)', data: [529.4, 545.1, 590, 661.7, 802.7, 2552.2], backgroundColor: ["rgba(54, 162, 235, 0.8)", "rgba(255, 99, 132, 0.8)", "rgba(75, 192, 192, 0.8)", "rgba(255, 206, 86, 0.8)", "rgba(153, 102, 255, 0.8)", "rgba(255, 159, 64, 0.8)"], borderWidth: 1 }] },
+            options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, title: { display: true, text: 'Czas wykonania (us)' } } } }
+        });
+        
+        new Chart(document.getElementById('memoryChart'), {
+            type: 'bar',
+            data: { labels: ["EagerLoading_Single", "SelectLoading_Single", "SelectLoading_List", "EagerLoading_List", "EagerLoading_Deep", "ExplicitLoading_Single"], datasets: [{ label: 'Pamiec (KB)', data: [124.75, 115.6, 125.87, 145.06, 176.78, 221.13], backgroundColor: ["rgba(54, 162, 235, 0.8)", "rgba(255, 99, 132, 0.8)", "rgba(75, 192, 192, 0.8)", "rgba(255, 206, 86, 0.8)", "rgba(153, 102, 255, 0.8)", "rgba(255, 159, 64, 0.8)"], borderWidth: 1 }] },
+            options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, title: { display: true, text: 'Alokacja pamieci (KB)' } } } }
+        });
+        
+        new Chart(document.getElementById('comparisonChart'), {
+            type: 'bar',
+            data: { labels: ["EagerLoading_Single", "SelectLoading_Single", "SelectLoading_List", "EagerLoading_List", "EagerLoading_Deep", "ExplicitLoading_Single"], datasets: [
+                { label: 'Czas (us)', data: [529.4, 545.1, 590, 661.7, 802.7, 2552.2], backgroundColor: 'rgba(54, 162, 235, 0.8)', yAxisID: 'y' },
+                { label: 'Pamiec (KB)', data: [124.75, 115.6, 125.87, 145.06, 176.78, 221.13], backgroundColor: 'rgba(255, 99, 132, 0.8)', yAxisID: 'y1' }
+            ]},
+            options: { responsive: true, plugins: { title: { display: true, text: 'Porownanie czasu i pamieci' } },
+                scales: { y: { type: 'linear', position: 'left', title: { display: true, text: 'Czas (us)' } },
+                          y1: { type: 'linear', position: 'right', title: { display: true, text: 'Pamiec (KB)' }, grid: { drawOnChartArea: false } } } }
+        });
+    </script>
+</body>
+</html>

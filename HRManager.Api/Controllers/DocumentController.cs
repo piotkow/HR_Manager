@@ -3,14 +3,13 @@ using HRManager.Services.DTOs.DocumentDTO;
 using HRManager.Services.DTOs.PhotoDTO;
 using HRManager.Services.Interfaces;
 using HRManager.Services.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRManager.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]"), Authorize]
+    [Route("api/[controller]")]
     public class DocumentController : ControllerBase
     {
         private readonly IDocumentService _documentService;

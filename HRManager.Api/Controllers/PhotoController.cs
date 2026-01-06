@@ -1,13 +1,12 @@
 ﻿using HRManager.Models.Entities;
 using HRManager.Services.DTOs.PhotoDTO;
 using HRManager.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRManager.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]"), Authorize]
+    [Route("api/[controller]")]
     public class PhotoController : Controller
     {
         private readonly IPhotoService _photoService;

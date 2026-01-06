@@ -231,7 +231,7 @@ namespace HRManager.Data
                     EmployeeID = 3,
                     Username = "admin",
                     Password = "$2a$10$sAop1QcdbP3y4OtC60pwSuVfhe6q1MjCoJJfvLcaulNs/cZ5Ewodu",
-                    AccountType = Role.Admin
+                    AccountType = Role.HR
                 }
             // Add more accounts as needed
             );
